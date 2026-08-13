@@ -35,12 +35,16 @@
  * ------------------------------------------------------------------ */
 
 .fruit {
+  // `--fruit-scale` lets an ancestor resize a whole group per breakpoint
+  // without touching transforms. Defaults to 1 when nothing sets it.
+  --rendered: calc(var(--size, 120px) * var(--fruit-scale, 1));
+
   position: relative;
   display: block;
   flex-shrink: 0;
-  width: var(--size, 120px);
-  height: var(--size, 120px);
-  font-size: var(--size, 120px);
+  width: var(--rendered);
+  height: var(--rendered);
+  font-size: var(--rendered);
   border-radius: 50%;
   // Promotes the shape to its own layer so transforms don't repaint it.
   backface-visibility: hidden;

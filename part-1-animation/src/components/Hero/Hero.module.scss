@@ -17,40 +17,46 @@
  * Floating fruit
  * ------------------------------------------------------------------ */
 
+/// Responsive fruit sizing lives here as a custom property rather than a
+/// `scale` transform. GSAP animates transforms on `.floater`, and when it does
+/// it absorbs any CSS `translate`/`scale` into its own matrix — after which a
+/// media query can no longer change them. A custom property is invisible to
+/// GSAP, so the breakpoints keep working.
 .orbit {
   position: absolute;
   inset: 0;
   pointer-events: none;
+
+  --fruit-scale: 0.55;
+
+  @include from('tablet') {
+    --fruit-scale: 0.78;
+  }
+
+  @include from('desktop') {
+    --fruit-scale: 1;
+  }
 }
 
 /// Layer 1 — position + scroll parallax target.
 ///
-/// `translate` and `scale` are used here rather than `transform`, because
-/// they're separate CSS properties: GSAP can then animate `transform` (your
-/// parallax `y`) without wiping out the centring or the responsive scale.
+/// Deliberately carries NO transform of its own. Centring is done with GSAP's
+/// `xPercent/yPercent` in `useHeroAnimation`, so transforms have exactly one
+/// owner and nothing gets overwritten.
 .floater {
   position: absolute;
   top: var(--top-sm);
   left: var(--left-sm);
-  translate: -50% -50%;
-  // Mobile first: small by default, full size only once there's room.
-  scale: 0.55;
 
   &[data-desktop-only='true'] {
     display: none;
   }
 
-  // Scale steps up at tablet, but the POSITIONS don't switch until desktop:
-  // until then the copy column is nearly full-bleed, so there's no room
-  // beside it — only above and below.
-  @include from('tablet') {
-    scale: 0.78;
-  }
-
+  // Positions don't switch until desktop: below that the copy column is
+  // nearly full-bleed, so there's no room beside it — only above and below.
   @include from('desktop') {
     top: var(--top);
     left: var(--left);
-    scale: 1;
 
     &[data-desktop-only='true'] {
       display: block;
@@ -143,7 +149,7 @@
     box-shadow var(--duration-fast) var(--ease-out);
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-6px);
   }
 
   &:active {

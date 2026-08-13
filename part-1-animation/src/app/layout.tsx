@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+// Ships with Lenis, so it always matches the installed version.
+import 'lenis/dist/lenis.css';
 import './globals.scss';
 
 export const metadata: Metadata = {

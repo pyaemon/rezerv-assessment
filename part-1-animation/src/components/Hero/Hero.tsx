@@ -1,9 +1,10 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import { useRef, type CSSProperties } from 'react';
 
 import { Fruit, type FruitKind } from '@/components/Fruit/Fruit';
 import styles from './Hero.module.scss';
+import { useHeroAnimation } from './useHeroAnimation';
 
 /**
  * SECTION 2 — Hero.  ← LAYOUT ONLY. All animation is yours to write.
@@ -140,8 +141,11 @@ const FLOATERS: readonly Floater[] = [
 const HEADLINE = ['Eat clean.', 'Train hard.', 'Feel unstoppable.'];
 
 export function Hero() {
+  const rootRef = useRef<HTMLElement>(null);
+  useHeroAnimation(rootRef);
+
   return (
-    <section className={styles.hero}>
+    <section ref={rootRef} className={styles.hero}>
       <div className={styles.orbit} aria-hidden="true">
         {FLOATERS.map((floater) => (
           <span
