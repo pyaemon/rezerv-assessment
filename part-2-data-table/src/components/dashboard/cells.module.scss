@@ -1,0 +1,66 @@
+.stacked {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.primary {
+  overflow: hidden;
+  font-weight: 550;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.secondary {
+  overflow: hidden;
+  color: var(--text-subtle);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attendance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+}
+
+.attendanceValue {
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter {
+  display: block;
+  width: 3.5rem;
+  height: 0.25rem;
+  overflow: hidden;
+  background: var(--neutral-soft);
+  border-radius: 999px;
+}
+
+.meterFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transform-origin: left center;
+  transition: transform var(--duration) var(--ease);
+}
+
+.meter[data-full='true'] .meterFill {
+  background: var(--warning);
+}
+
+.waitlist {
+  color: var(--text-subtle);
+  font-size: 0.6875rem;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}

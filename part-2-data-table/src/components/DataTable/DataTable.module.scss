@@ -1,0 +1,457 @@
+@use '../../styles/mixins' as *;
+
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.srOnly {
+  @include visually-hidden;
+}
+
+/* ------------------------------------------------------------------ *
+ * Scroll container
+ * ------------------------------------------------------------------ */
+
+.scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  // Keyboard users can focus and arrow-scroll the region; the ring sits
+  // inside so it isn't clipped by the rounded corners.
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+}
+
+/// Right-edge fade telling the user there is more table off-screen.
+.edgeFade {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  width: 3rem;
+  height: 100%;
+  background: linear-gradient(to right, rgb(255 255 255 / 0%), var(--surface));
+  border-radius: 0 var(--radius-lg) 0 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration) var(--ease);
+
+  &[data-visible='true'] {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Table
+ * ------------------------------------------------------------------ */
+
+.table {
+  width: 100%;
+  // Fixed layout makes the pinned-column offsets exact: a cell's rendered
+  // width always equals its declared width, so `left` accumulation can't drift.
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  transition: opacity var(--duration) var(--ease);
+
+  &[data-fetching='true'] {
+    opacity: 0.55;
+  }
+}
+
+.thead {
+  background: var(--surface-sunken);
+}
+
+.th {
+  position: relative;
+  padding: 0;
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  &[data-align='right'] {
+    text-align: right;
+  }
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+}
+
+.headerText,
+.sortButton {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.th[data-align='right'] .headerText,
+.th[data-align='right'] .sortButton {
+  justify-content: flex-end;
+}
+
+.th[data-align='center'] .headerText,
+.th[data-align='center'] .sortButton {
+  justify-content: center;
+}
+
+.sortButton {
+  background: none;
+  border: 0;
+  transition: color var(--duration-fast) var(--ease);
+
+  &:hover {
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+}
+
+.sortIcon {
+  flex-shrink: 0;
+  color: var(--text-subtle);
+  transition: color var(--duration-fast) var(--ease);
+
+  &[data-direction='asc'],
+  &[data-direction='desc'] {
+    color: var(--accent);
+  }
+}
+
+.sortButton:hover .sortIcon {
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ *
+ * Rows and cells
+ * ------------------------------------------------------------------ */
+
+.row {
+  // Read by `.pinned { background: inherit }` so sticky cells never show the
+  // scrolling content through themselves, in any row state.
+  background: var(--surface);
+  transition: background-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &[data-expanded='true'] {
+    background: var(--accent-soft);
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.cell {
+  position: relative;
+  padding: 0.8125rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &[data-align='right'] {
+    text-align: right;
+  }
+
+  &[data-align='center'] {
+    text-align: center;
+  }
+}
+
+.muted {
+  color: var(--text-subtle);
+}
+
+/* ------------------------------------------------------------------ *
+ * Pinned column
+ * ------------------------------------------------------------------ */
+
+.pinned {
+  position: sticky;
+  z-index: 2;
+  // Inherits whatever the row is currently painted with — default, hover or
+  // expanded — which is what keeps the pinned cell opaque without repeating
+  // every row state here.
+  background: inherit;
+}
+
+.thead .pinned {
+  z-index: 3;
+  // `inherit` resolves to the <tr>, which is transparent in the head — so the
+  // header's pinned cells need the surface colour stated outright or scrolled
+  // columns show through them.
+  background: var(--surface-sunken);
+}
+
+.lastPinned {
+  border-right: 1px solid var(--border);
+
+  // The shadow lives on a pseudo-element so toggling it animates opacity
+  // only — no layout, no repaint of the cell itself.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 -1px auto;
+    width: 0.5rem;
+    transform: translateX(100%);
+    background: linear-gradient(to right, rgb(16 25 31 / 10%), transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration) var(--ease);
+  }
+}
+
+.table[data-scrolled='true'] .lastPinned::after {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ *
+ * Expander
+ * ------------------------------------------------------------------ */
+
+.expanderCell {
+  padding-left: 0.5rem;
+  padding-right: 0;
+  text-align: center;
+  // `.cell` sets `text-overflow: ellipsis` for long text; against a centred
+  // inline-flex button that renders a stray ellipsis glyph at the cell edge.
+  text-overflow: clip;
+}
+
+.expander {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+
+  &:hover {
+    color: var(--text);
+    background: var(--neutral-soft);
+  }
+
+  svg {
+    transition: transform var(--duration) var(--ease);
+  }
+
+  &[data-open='true'] {
+    color: var(--accent);
+  }
+
+  &[data-open='true'] svg {
+    transform: rotate(90deg);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Expansion panel
+ * ------------------------------------------------------------------ */
+
+.panelRow {
+  background: var(--surface-sunken);
+}
+
+.panelCell {
+  padding: 0;
+  border: 0;
+}
+
+/// 0fr -> 1fr animates to the panel's natural height with no JS measurement,
+/// so expanding never forces a reflow.
+.collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-slow) var(--ease);
+
+  &[data-open='true'] {
+    grid-template-rows: 1fr;
+  }
+}
+
+.collapsibleInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.panelBody {
+  padding: 1rem 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.panelState {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.panelError {
+  color: var(--danger);
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+
+  @include motion-safe {
+    animation: spin 700ms linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retryButton {
+  padding: 0.3125rem 0.75rem;
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Loading / empty / error states
+ * ------------------------------------------------------------------ */
+
+.skeleton,
+.skeletonCircle {
+  position: relative;
+  display: block;
+  height: 0.75rem;
+  overflow: hidden;
+  background: var(--neutral-soft);
+  border-radius: 999px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0%),
+      rgb(255 255 255 / 70%),
+      rgb(255 255 255 / 0%)
+    );
+    transform: translateX(-100%);
+
+    @include motion-safe {
+      // Transform-only shimmer: runs on the compositor, never on layout.
+      animation: shimmer 1.4s var(--ease) infinite;
+    }
+  }
+}
+
+.skeletonCircle {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-inline: auto;
+  border-radius: 50%;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.stateCell {
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.state {
+  display: flex;
+  gap: 0.875rem;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: left;
+}
+
+.stateIcon {
+  flex-shrink: 0;
+  color: var(--text-subtle);
+}
+
+.stateError .stateIcon {
+  color: var(--danger);
+}
+
+.stateTitle {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stateBody {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.footnote {
+  padding: 0.625rem 1rem;
+  color: var(--text-subtle);
+  font-size: 0.8125rem;
+  border-top: 1px solid var(--border);
+}
+
+@include below('tablet') {
+  .headerText,
+  .sortButton {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .cell {
+    padding: 0.6875rem 0.75rem;
+  }
+
+  .state {
+    padding: 2rem 1rem;
+  }
+}

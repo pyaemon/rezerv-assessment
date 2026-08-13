@@ -1,0 +1,136 @@
+@use '../styles/mixins' as *;
+
+/* ------------------------------------------------------------------ *
+ * Design tokens
+ *
+ * Everything below the token block reads from these variables — no
+ * component hard-codes a colour, radius or shadow. Retheming the whole
+ * dashboard is a single edit here.
+ * ------------------------------------------------------------------ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-sunken: #fafbfc;
+  --surface-hover: #f7f8fa;
+
+  /* Lines */
+  --border: #e6e8ec;
+  --border-strong: #d3d8df;
+
+  /* Text */
+  --text: #16191f;
+  --text-muted: #616a76;
+  --text-subtle: #8b939f;
+
+  /* Brand + status */
+  --accent: #04936a;
+  --accent-hover: #037a58;
+  --accent-soft: #e7f7f1;
+  --danger: #c8342a;
+  --danger-soft: #fdeeed;
+  --warning: #a55b06;
+  --warning-soft: #fdf3e4;
+  --info: #1758c4;
+  --info-soft: #eaf1fd;
+  --neutral-soft: #f0f1f4;
+
+  --focus: #04936a;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgb(16 25 31 / 6%);
+  --shadow-sm: 0 1px 3px rgb(16 25 31 / 8%), 0 1px 2px rgb(16 25 31 / 4%);
+  --shadow-md: 0 8px 24px rgb(16 25 31 / 8%);
+  /* Cast rightwards by the pinned column when content slides under it. */
+  --shadow-pinned: 6px 0 8px -6px rgb(16 25 31 / 18%);
+
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration: 200ms;
+  --duration-slow: 280ms;
+
+  /* Type */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reset
+ * ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--accent);
+}
+
+:where(a, button, select, [tabindex]):focus-visible {
+  @include focus-ring;
+}
+
+/* Users who ask for reduced motion get state changes, not transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
