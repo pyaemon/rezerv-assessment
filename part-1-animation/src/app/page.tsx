@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Collection } from '@/components/Collection/Collection';
 import { Hero } from '@/components/Hero/Hero';
 import { Preloader } from '@/components/Preloader/Preloader';
@@ -8,17 +10,19 @@ import { SmoothScroll } from '@/components/SmoothScroll/SmoothScroll';
 /**
  * One page, three sections. No routing, no real navigation — per the brief.
  *
- * Suggested build order:
- *   1. Hero (static layout first, animation second)
- *   2. Collection
- *   3. Preloader last — it's easiest to build once there's something to reveal
+ * `introReady` is the handoff between the loader and the hero: the preloader
+ * flips it as its exit wipe begins, and the hero's entrance timeline waits on
+ * it. Keeping that state here rather than inside either component means
+ * neither has to know about the other.
  */
 export default function Page() {
+  const [introReady, setIntroReady] = useState(false);
+
   return (
     <SmoothScroll>
-      <Preloader />
+      <Preloader onComplete={() => setIntroReady(true)} />
       <main>
-        <Hero />
+        <Hero introReady={introReady} />
         <Collection />
       </main>
     </SmoothScroll>

@@ -1,38 +1,24 @@
 'use client';
 
+import { useRef } from 'react';
+
 import { Fruit, type FruitKind } from '@/components/Fruit/Fruit';
 import styles from './Collection.module.scss';
+import { useCollectionAnimation } from './useCollectionAnimation';
 
 /**
- * SECTION 3 — Collection.  ← LAYOUT ONLY. All animation is yours to write.
+ * SECTION 3 — Collection.
  *
- * Structure is `.viewport` (the window) wrapping `.rail` (the strip that
- * slides). That split matters: you pin the SECTION, and translate the RAIL.
- * Trying to do both on one element fights ScrollTrigger's pin spacer.
+ * `.viewport` is the window, `.rail` is the strip inside it. On desktop the
+ * cards sit side by side; below that the viewport becomes a natively
+ * swipeable, scroll-snapping strip, so touch scrolling is never intercepted.
  *
- * ── YOUR TODO LIST ─────────────────────────────────────────────────────
- * □ Pinned horizontal scroll (desktop only):
- *     gsap.to(rail, {
- *       x: () => -(rail.scrollWidth - viewport.clientWidth),
- *       ease: 'none',
- *       scrollTrigger: {
- *         trigger: section, pin: true, scrub: 1,
- *         end: () => '+=' + rail.scrollWidth,
- *         invalidateOnRefresh: true,
- *       },
- *     });
- *   Function values + `invalidateOnRefresh` are what make resize work.
+ * Motion is split by cost:
+ *   • Scroll reveals — `useCollectionAnimation`
+ *   • Hover (card lift, fruit zoom, button fill) — plain CSS transitions
  *
- * □ Card reveals as each enters view. These do NOT need scrub — a one-shot
- *   `toggleActions: 'play none none reverse'` is cheaper and looks better.
- *
- * □ MOBILE: do not pin. A pinned horizontal rail fights native touch
- *   scrolling. `.rail` already falls back to a swipeable overflow-x strip
- *   below the desktop breakpoint — just skip building the timeline there
- *   via `gsap.matchMedia()`, and write that decision up in your README.
- *
- * Card hover is already handled in CSS. You don't need GSAP for everything,
- * and saying that out loud in the README reads as judgement, not laziness.
+ * Hover doesn't need a JS animation library. Keeping it in CSS means those
+ * interactions cost nothing at runtime and keep working if GSAP never loads.
  */
 
 interface Item {
@@ -104,8 +90,11 @@ const ITEMS: readonly Item[] = [
 ];
 
 export function Collection() {
+  const rootRef = useRef<HTMLElement>(null);
+  useCollectionAnimation(rootRef);
+
   return (
-    <section className={styles.collection}>
+    <section ref={rootRef} className={styles.collection}>
       <div className={styles.head}>
         <p className={styles.eyebrow}>This week&apos;s line-up</p>
         <h2 className={styles.title}>Six ways to fuel a training week</h2>

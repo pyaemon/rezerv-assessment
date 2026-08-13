@@ -140,9 +140,9 @@ const FLOATERS: readonly Floater[] = [
 
 const HEADLINE = ['Eat clean.', 'Train hard.', 'Feel unstoppable.'];
 
-export function Hero() {
+export function Hero({ introReady }: { introReady: boolean }) {
   const rootRef = useRef<HTMLElement>(null);
-  useHeroAnimation(rootRef);
+  useHeroAnimation(rootRef, introReady);
 
   return (
     <section ref={rootRef} className={styles.hero}>

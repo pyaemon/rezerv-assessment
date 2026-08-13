@@ -1,12 +1,93 @@
 @use '../../styles/mixins' as *;
 
-// TODO: your styles for the Preloader section.
-//
-// Reminders:
-//  • animate transform / opacity only
-//  • mobile-first: base rules, then @include from('tablet') / from('desktop')
-//  • wrap decorative motion in @include motion-safe
+/// Applied to <html> while the loader is up, so the page can't scroll
+/// underneath it. Exported through the CSS-Modules object and toggled in JS.
+:global(html).locked,
+.locked {
+  overflow: hidden;
+}
 
 .preloader {
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  // The wipe animates yPercent; declaring the origin keeps it predictable.
+  transform-origin: top center;
+  will-change: transform;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Activity ring
+ * ------------------------------------------------------------------ */
+
+.ring {
+  width: 7.5rem;
+  height: 7.5rem;
+  // Start the fill at 12 o'clock instead of 3 o'clock.
+  transform: rotate(-90deg);
+  overflow: visible;
+
+  @include from('tablet') {
+    width: 9rem;
+    height: 9rem;
+  }
+}
+
+.track,
+.progress {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: rgb(20 33 15 / 8%);
+}
+
+.progress {
+  stroke: var(--accent);
+  // No CSS transition here: React updates `stroke-dashoffset` every frame
+  // from the GSAP tween, so a transition would fight it and lag behind.
+}
+
+/* ------------------------------------------------------------------ *
+ * Readout
+ * ------------------------------------------------------------------ */
+
+.percent {
+  display: flex;
+  align-items: baseline;
+  gap: 0.1em;
+  font-size: 2rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  // Stops the counter jittering as digits change width.
+  font-variant-numeric: tabular-nums;
+
+  @include from('tablet') {
+    font-size: 2.5rem;
+  }
+}
+
+.percentSign {
+  color: var(--ink-muted);
+  font-size: 0.5em;
+  font-weight: 500;
+}
+
+.label {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }

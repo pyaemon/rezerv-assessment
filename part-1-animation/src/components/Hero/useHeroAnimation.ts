@@ -22,7 +22,11 @@ gsap.registerPlugin(ScrollTrigger);
  * reverts the previous set automatically when the query stops matching. That
  * is what makes resizing behave: no stale tweens, no leftover inline styles.
  */
-export function useHeroAnimation(rootRef: RefObject<HTMLElement | null>) {
+export function useHeroAnimation(
+  rootRef: RefObject<HTMLElement | null>,
+  /** Flipped by the preloader as it starts to leave. */
+  introReady: boolean,
+) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -49,6 +53,14 @@ export function useHeroAnimation(rootRef: RefObject<HTMLElement | null>) {
     // across breakpoints.
     gsap.set(floaters, { xPercent: -50, yPercent: -50 });
 
+    // Hide the entrance targets straight away, while the loader still covers
+    // the page. Waiting until `introReady` would leave a frame of finished
+    // hero visible if the wipe ever ran early.
+    gsap.set(lines, { yPercent: 110 });
+    gsap.set([...copy, ...floaters], { opacity: 0 });
+
+    if (!introReady) return;
+
     const mm = gsap.matchMedia(root);
 
     mm.add(
@@ -66,40 +78,39 @@ export function useHeroAnimation(rootRef: RefObject<HTMLElement | null>) {
          * Reduced motion — show the finished state, animate nothing.
          * ---------------------------------------------------------- */
         if (reduce) {
-          gsap.set([...floaters, ...lines, ...copy], {
-            opacity: 1,
-            clearProps: 'transform',
-          });
+          gsap.set([...lines, ...copy], { opacity: 1, yPercent: 0, y: 0 });
+          gsap.set(floaters, { opacity: 1, scale: 1 });
           return;
         }
 
         /* ---------------------------------------------------------- *
-         * 1. Entrance
+         * 1. Entrance — runs once the preloader hands over.
          *
-         * Runs once on mount. When the preloader exists, gate this on
-         * its completion instead.
+         * `fromTo` rather than `from`, because the hidden state was already
+         * applied above: `from` would read those hidden values as the
+         * destination and animate nowhere.
          * ---------------------------------------------------------- */
         gsap
           .timeline({ defaults: { ease: 'power3.out' } })
           // The headline masks live in `.line`, which has overflow: hidden.
-          // Starting the inner span at yPercent 100 hides it behind that edge.
-          .from(lines, {
-            yPercent: 110,
-            duration: 1,
-            stagger: 0.09,
-          })
-          .from(
+          // Starting the inner span at yPercent 110 hides it behind that edge.
+          .fromTo(
+            lines,
+            { yPercent: 110 },
+            { yPercent: 0, duration: 1, stagger: 0.09 },
+          )
+          .fromTo(
             copy,
-            { y: 18, opacity: 0, duration: 0.7, stagger: 0.08 },
+            { y: 18, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.7, stagger: 0.08 },
             '-=0.6',
           )
-          .from(
+          .fromTo(
             floaters,
+            { scale: 0.55, opacity: 0 },
             {
-              // `scale` here composes with the responsive `scale` set in CSS
-              // (they multiply), so the fruit lands at its correct size.
-              scale: 0.55,
-              opacity: 0,
+              scale: 1,
+              opacity: 1,
               duration: 0.9,
               ease: 'back.out(1.5)',
               stagger: { each: 0.07, from: 'random' },
@@ -195,5 +206,5 @@ export function useHeroAnimation(rootRef: RefObject<HTMLElement | null>) {
     );
 
     return () => mm.revert();
-  }, [rootRef]);
+  }, [rootRef, introReady]);
 }
