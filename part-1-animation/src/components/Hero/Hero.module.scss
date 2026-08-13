@@ -17,11 +17,11 @@
  * Floating fruit
  * ------------------------------------------------------------------ */
 
-/// Responsive fruit sizing lives here as a custom property rather than a
-/// `scale` transform. GSAP animates transforms on `.floater`, and when it does
-/// it absorbs any CSS `translate`/`scale` into its own matrix — after which a
-/// media query can no longer change them. A custom property is invisible to
-/// GSAP, so the breakpoints keep working.
+/// Responsive fruit sizing is a custom property, not a `scale` transform.
+/// GSAP animates transforms on `.floater`, and when it does it absorbs any
+/// CSS `translate`/`scale` into its own matrix — after which a media query
+/// can no longer change them. Custom properties are invisible to GSAP, so
+/// the breakpoints keep working.
 .orbit {
   position: absolute;
   inset: 0;
@@ -149,7 +149,7 @@
     box-shadow var(--duration-fast) var(--ease-out);
 
   &:hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
   }
 
   &:active {
