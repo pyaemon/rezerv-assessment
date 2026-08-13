@@ -1,0 +1,12 @@
+@use '../../styles/mixins' as *;
+
+// TODO: your styles for the Preloader section.
+//
+// Reminders:
+//  • animate transform / opacity only
+//  • mobile-first: base rules, then @include from('tablet') / from('desktop')
+//  • wrap decorative motion in @include motion-safe
+
+.preloader {
+  position: relative;
+}

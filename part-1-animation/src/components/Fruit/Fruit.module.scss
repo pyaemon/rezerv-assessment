@@ -1,0 +1,195 @@
+@use 'sass:list';
+@use 'sass:math';
+
+/* ------------------------------------------------------------------ *
+ * Helpers
+ * ------------------------------------------------------------------ */
+
+/// Scatters `$count` dots evenly around a circle and returns them as a
+/// comma-separated list of radial-gradients, ready to hand to `background`.
+/// Used for kiwi and melon seeds so they aren't hand-positioned by eye.
+@function seed-ring($count, $radius, $size, $color, $offset: 0deg) {
+  $result: ();
+
+  @for $i from 0 through $count - 1 {
+    $angle: $offset + math.div(360deg, $count) * $i;
+    $x: 50% + $radius * math.cos($angle);
+    $y: 50% + $radius * math.sin($angle);
+
+    $result: list.append(
+      $result,
+      radial-gradient(circle at $x $y, $color 0 $size, transparent $size),
+      $separator: comma
+    );
+  }
+
+  @return $result;
+}
+
+/* ------------------------------------------------------------------ *
+ * Base
+ *
+ * `font-size: var(--size)` is the trick that makes everything inside
+ * scale: every internal measurement below is in `em`, so one --size
+ * drives the whole drawing.
+ * ------------------------------------------------------------------ */
+
+.fruit {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: var(--size, 120px);
+  height: var(--size, 120px);
+  font-size: var(--size, 120px);
+  border-radius: 50%;
+  // Promotes the shape to its own layer so transforms don't repaint it.
+  backface-visibility: hidden;
+}
+
+.fruit::before,
+.fruit::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* ------------------------------------------------------------------ *
+ * Whole fruit
+ * ------------------------------------------------------------------ */
+
+.orange,
+.lime,
+.berry {
+  // Offset highlight top-left, shadow bottom-right — reads as a sphere.
+  box-shadow:
+    inset -0.07em -0.09em 0.14em rgb(90 40 0 / 30%),
+    inset 0.05em 0.06em 0.1em rgb(255 255 255 / 25%);
+}
+
+.orange {
+  background:
+    radial-gradient(circle at 33% 27%, #ffd08a 0 12%, transparent 55%),
+    radial-gradient(circle at 50% 55%, #f79420 0 55%, #dd6f08 100%);
+}
+
+/* Dimple where the stalk was. */
+.orange::before {
+  inset: 8% auto auto 44%;
+  width: 0.1em;
+  height: 0.1em;
+  background: #a9530a;
+  box-shadow: inset 0 0.015em 0.02em rgb(0 0 0 / 40%);
+}
+
+.lime {
+  background:
+    radial-gradient(circle at 34% 28%, #dcf7a8 0 12%, transparent 55%),
+    radial-gradient(circle at 50% 55%, #7cb828 0 55%, #4e8410 100%);
+}
+
+.lime::before {
+  inset: 9% auto auto 45%;
+  width: 0.08em;
+  height: 0.08em;
+  background: #3d6b0c;
+}
+
+.berry {
+  background:
+    radial-gradient(circle at 34% 26%, #9fb6e8 0 14%, transparent 52%),
+    radial-gradient(circle at 50% 55%, #43508f 0 52%, #1e2450 100%);
+}
+
+/* The pale crown on top of a blueberry. */
+.berry::before {
+  inset: 26% 26% auto auto;
+  top: 12%;
+  left: 34%;
+  width: 0.32em;
+  height: 0.32em;
+  background:
+    radial-gradient(circle at 50% 50%, #6d7bb5 0 22%, transparent 24%),
+    conic-gradient(
+      from 18deg,
+      #5b68a4 0 12deg,
+      transparent 12deg 60deg,
+      #5b68a4 60deg 72deg,
+      transparent 72deg 120deg,
+      #5b68a4 120deg 132deg,
+      transparent 132deg 180deg,
+      #5b68a4 180deg 192deg,
+      transparent 192deg 240deg,
+      #5b68a4 240deg 252deg,
+      transparent 252deg 300deg,
+      #5b68a4 300deg 312deg,
+      transparent 312deg
+    );
+  opacity: 0.9;
+}
+
+/* ------------------------------------------------------------------ *
+ * Slices
+ *
+ * Same three-layer recipe each time:
+ *   element  → rind
+ *   ::before → pith / inner flesh
+ *   ::after  → segments or seeds
+ * ------------------------------------------------------------------ */
+
+.citrus {
+  background: linear-gradient(150deg, #f9a33a, #e07a10);
+  box-shadow: inset -0.04em -0.05em 0.09em rgb(120 60 0 / 25%);
+}
+
+.citrus::before {
+  inset: 5.5%;
+  background: #fff4de;
+}
+
+/* Alternating flesh wedges separated by thin pith lines. */
+.citrus::after {
+  inset: 9%;
+  background: repeating-conic-gradient(
+    from 9deg,
+    #ffa53d 0deg 34deg,
+    #fff4de 34deg 40deg
+  );
+  box-shadow: inset 0 0 0.06em rgb(200 110 20 / 45%);
+}
+
+.kiwi {
+  background: linear-gradient(150deg, #9a7b3f, #6f5626);
+}
+
+.kiwi::before {
+  inset: 6%;
+  background:
+    radial-gradient(circle at 50% 50%, #f4f3e2 0 15%, transparent 16%),
+    radial-gradient(circle at 50% 50%, #a8cc52 0 42%, #78a72f 100%);
+}
+
+.kiwi::after {
+  inset: 6%;
+  // 14 seeds on a ring at 26% of the radius.
+  background: seed-ring(14, 26%, 0.024em, rgb(38 30 12 / 88%));
+}
+
+.melon {
+  background: linear-gradient(150deg, #3f8f3a, #1f5c22);
+}
+
+.melon::before {
+  inset: 5%;
+  background:
+    radial-gradient(circle at 50% 50%, #ff6b78 0 78%, #f24a5c 100%),
+    #fdfdf2;
+  box-shadow: inset 0 0 0 0.055em #fdfdf2;
+}
+
+/* Two offset rings of seeds so they don't look mechanically placed. */
+.melon::after {
+  inset: 5%;
+  background:
+    seed-ring(9, 30%, 0.028em, rgb(30 20 12 / 85%)),
+    seed-ring(6, 15%, 0.026em, rgb(30 20 12 / 78%), 24deg);
+}

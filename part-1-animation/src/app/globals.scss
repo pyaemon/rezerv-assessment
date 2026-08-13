@@ -1,0 +1,105 @@
+/* ------------------------------------------------------------------ *
+ * Design tokens
+ *
+ * Placeholder values — change these to your own palette. Nothing else in
+ * the project should hard-code a colour or a duration.
+ * ------------------------------------------------------------------ */
+
+:root {
+  /* Surfaces */
+  --bg: #fdfbf6;
+  --surface: #ffffff;
+  --ink: #14210f;
+  --ink-muted: #5c6b55;
+
+  /* Accents — swap for your own */
+  --accent: #4a7c2f;
+  --accent-soft: #eaf3e2;
+  --citrus: #f2a71b;
+  --berry: #b8365a;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration: 400ms;
+  --duration-slow: 800ms;
+
+  /* Type */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reset
+ * ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Lenis drives scrolling in JS — native smooth scroll would fight it. */
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  /* Nothing should ever scroll the page sideways. */
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Respect the OS setting. Individual timelines should ALSO check this in JS
+   (see `gsap.matchMedia`) — this block only neutralises CSS transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

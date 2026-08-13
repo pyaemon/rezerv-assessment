@@ -1,0 +1,229 @@
+@use '../../styles/mixins' as *;
+
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: 6rem 1.25rem 5rem;
+  overflow: hidden;
+
+  @include from('tablet') {
+    padding: 7rem 2rem 6rem;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Floating fruit
+ * ------------------------------------------------------------------ */
+
+.orbit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/// Layer 1 — position + scroll parallax target.
+///
+/// `translate` and `scale` are used here rather than `transform`, because
+/// they're separate CSS properties: GSAP can then animate `transform` (your
+/// parallax `y`) without wiping out the centring or the responsive scale.
+.floater {
+  position: absolute;
+  top: var(--top-sm);
+  left: var(--left-sm);
+  translate: -50% -50%;
+  // Mobile first: small by default, full size only once there's room.
+  scale: 0.55;
+
+  &[data-desktop-only='true'] {
+    display: none;
+  }
+
+  // Scale steps up at tablet, but the POSITIONS don't switch until desktop:
+  // until then the copy column is nearly full-bleed, so there's no room
+  // beside it — only above and below.
+  @include from('tablet') {
+    scale: 0.78;
+  }
+
+  @include from('desktop') {
+    top: var(--top);
+    left: var(--left);
+    scale: 1;
+
+    &[data-desktop-only='true'] {
+      display: block;
+    }
+  }
+}
+
+/// Layer 2 — idle drift. Left free for your looping tween.
+.bob {
+  display: block;
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------------ *
+ * Copy
+ * ------------------------------------------------------------------ */
+
+.inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 44rem;
+  text-align: center;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(2.5rem, 9vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+/// The mask. Its child is what you animate — `yPercent: 100` starts the
+/// text hidden below this edge. `padding-bottom` stops descenders (g, p, y)
+/// from being clipped once it lands.
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+
+  > span {
+    display: block;
+    will-change: transform;
+  }
+}
+
+.lede {
+  max-width: 34rem;
+  color: var(--ink-muted);
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * Buttons — hover states are REQUIRED by the brief.
+ * Transform + colour only, so hovering never triggers layout.
+ * ------------------------------------------------------------------ */
+
+.cta,
+.ghost {
+  position: relative;
+  padding: 0.9rem 1.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: 999px;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.cta {
+  color: #fff;
+  background: var(--accent);
+  border: 0;
+  box-shadow: 0 6px 18px rgb(74 124 47 / 28%);
+
+  &:hover {
+    background: #3d6a26;
+    box-shadow: 0 10px 26px rgb(74 124 47 / 34%);
+  }
+}
+
+.ghost {
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid rgb(20 33 15 / 18%);
+
+  &:hover {
+    background: var(--accent-soft);
+    border-color: transparent;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Scroll cue — pure CSS, no GSAP needed.
+ * ------------------------------------------------------------------ */
+
+.scrollCue {
+  position: absolute;
+  bottom: 1.75rem;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  align-items: center;
+  translate: -50% 0;
+  color: var(--ink-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.scrollLine {
+  position: relative;
+  width: 1px;
+  height: 2.75rem;
+  overflow: hidden;
+  background: rgb(20 33 15 / 15%);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: top;
+
+    @include motion-safe {
+      animation: scroll-cue 1.9s var(--ease-in-out) infinite;
+    }
+  }
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: scaleY(0) translateY(0);
+  }
+  45% {
+    transform: scaleY(1) translateY(0);
+  }
+  55% {
+    transform: scaleY(1) translateY(0);
+  }
+  100% {
+    transform: scaleY(0) translateY(100%);
+  }
+}
