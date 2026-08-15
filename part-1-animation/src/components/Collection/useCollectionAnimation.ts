@@ -32,9 +32,8 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
     mm.add(
       {
         isDesktop: '(min-width: 1024px)',
-        // Without a branch that matches below 1024px, GSAP would call this
-        // callback for nobody on phones and tablets — and no animation would
-        // be built at all.
+        // Without a below-1024 branch nothing matches on phones, and GSAP
+        // never runs this callback at all.
         isMobile: '(max-width: 1023.98px)',
         reduce: '(prefers-reduced-motion: reduce)',
       },
@@ -56,9 +55,7 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
           return;
         }
 
-        /* ---------------------------------------------------------- *
-         * 1. Heading — masked line reveal, same technique as the hero
-         * ---------------------------------------------------------- */
+        // 1. Heading — same masked line reveal as the hero.
         const headingIn = gsap.timeline({
           scrollTrigger: {
             trigger: root,
@@ -80,14 +77,8 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
             '-=0.4',
           );
 
-        /* ---------------------------------------------------------- *
-         * 2. Card reveals
-         *
-         * Desktop cards sit side by side, so one trigger staggers them as a
-         * group. Below that they're in a horizontally scrollable strip, where
-         * a shared trigger would fire for cards still off to the right — so
-         * each gets its own.
-         * ---------------------------------------------------------- */
+        // 2. Card reveals. One grouped trigger on desktop; per-card below,
+        // where a shared trigger would fire for cards still off-screen right.
         if (isDesktop) {
           gsap.fromTo(
             cards,
@@ -126,17 +117,8 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
           });
         }
 
-        /* ---------------------------------------------------------- *
-         * 3. Fruit turns slowly in its plate as the card crosses the
-         *    viewport.
-         *
-         * Rotation only — no translation. The plate is a circle, so a fruit
-         * that also moved would drift against its edge and get clipped.
-         * Spinning in place stays contained at any scroll position.
-         *
-         * `ease: 'none'` because it's scrub-linked: any easing here would
-         * make the fruit appear to lag the scroll.
-         * ---------------------------------------------------------- */
+        // 3. Fruit turns as its card crosses the viewport. Rotation only, so
+        // it stays put. `ease: none` — easing a scrub makes it lag the scroll.
         fruits.forEach((fruit, index) => {
           gsap.to(fruit, {
             rotation: index % 2 === 0 ? 24 : -24,
@@ -151,25 +133,18 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
           });
         });
 
-        /* ---------------------------------------------------------- *
-         * 4. 3D tilt on hover — desktop only
-         *
-         * There is no cursor to lean toward on a touch device, and the CSS
-         * `:hover` lift already covers those sizes.
-         * ---------------------------------------------------------- */
+        // 4. 3D tilt on hover. Desktop only — no cursor to lean toward on
+        // touch, where CSS :hover handles the lift instead.
         if (!isDesktop) return;
 
-        // Per-card perspective rather than a shared one on the container, so
-        // each card has its own vanishing point instead of the row sharing a
-        // single one (which looks skewed at the edges of a grid).
+        // Per-card perspective: a shared one skews cards at the row's edges.
         gsap.set(cards, {
           transformPerspective: 900,
           transformOrigin: 'center center',
         });
 
         const teardowns = cards.map((card) => {
-          // quickTo reuses one tween per property instead of allocating a new
-          // one on every pointer move.
+          // quickTo reuses one tween per property, not one per pointer move.
           const rotX = gsap.quickTo(card, 'rotationX', {
             duration: 0.5,
             ease: 'power3',
@@ -183,9 +158,7 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
             ease: 'power3',
           });
 
-          // Measured on enter, not on every move — calling
-          // getBoundingClientRect inside a pointermove handler forces a
-          // layout recalculation on every frame.
+          // Measured on enter: getBoundingClientRect per move forces reflow.
           let bounds = card.getBoundingClientRect();
 
           const onEnter = () => {
@@ -219,8 +192,7 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
           };
         });
 
-        // matchMedia runs this when the query stops matching, alongside
-        // reverting every tween created above.
+        // Runs when the query stops matching, alongside reverting the tweens.
         return () => teardowns.forEach((teardown) => teardown());
       },
     );

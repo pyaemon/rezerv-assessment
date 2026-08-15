@@ -42,9 +42,8 @@
   letter-spacing: -0.02em;
 }
 
-/// Same masked-line technique as the hero headline: `overflow: hidden` on the
-/// outer span, and the inner span animates up from behind that edge. Sharing
-/// the pattern is what makes the two sections feel like one page.
+/// Same masked-line reveal as the hero headline — shared so the two sections
+/// read as one page.
 .line {
   display: block;
   overflow: hidden;
@@ -62,8 +61,10 @@
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 
+  // Desktop lays the rail out as a grid that fits, so nothing needs clipping —
+  // and clipping here would cut the hover shadow and 3D tilt off the last row.
   @include from('desktop') {
-    overflow: hidden;
+    overflow: visible;
     scroll-snap-type: none;
   }
 }
@@ -73,8 +74,7 @@
   gap: 1.25rem;
   width: max-content;
   padding-inline: 1.25rem;
-  // The plate breaks out above each card, so the rail needs headroom or the
-  // first row would be clipped by the section above it.
+  // Headroom for the fruit that breaks out above each card.
   padding-top: 3.75rem;
 
   @include from('tablet') {
@@ -88,15 +88,13 @@
     width: auto;
     max-width: 68rem;
     margin-inline: auto;
-    // Wider row gap than column gap: the overhanging plate has to clear the
-    // card above it.
+    // Wider row gap: the overhanging fruit must clear the card above.
     gap: 5.5rem 2rem;
     padding-inline: 2rem;
   }
 }
 
-/// Solid, saturated card with a circular "plate" overhanging its top edge.
-/// The tone drives the whole card now, not just a tint behind the fruit.
+/// Solid tone card with the fruit overhanging its top edge.
 .card {
   --tone: #e8722e;
   --tone-deep: #c25716;
@@ -107,13 +105,13 @@
   gap: 1.125rem;
   flex-shrink: 0;
   width: min(74vw, 20rem);
-  // Top padding leaves room for the plate that hangs over the edge.
+  // Room for the fruit hanging over the top edge.
   padding: 5.25rem 1.5rem 1.5rem;
   scroll-snap-align: center;
   background: var(--tone);
   border-radius: 1.75rem;
   box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
-  // MUST stay visible — `hidden` would crop the overhanging plate.
+  // MUST stay visible — `hidden` would crop the overhanging fruit.
   overflow: visible;
   transition:
     transform var(--duration) var(--ease-out),
@@ -124,9 +122,8 @@
     width: auto;
   }
 
-  // The hover LIFT is handled by GSAP on desktop (it also tilts the card, and
-  // two owners of `transform` would fight — inline style always wins).
-  // Shadow isn't a transform, so it stays here and applies at every size.
+  // GSAP owns the lift on desktop (it also tilts) — two owners of `transform`
+  // fight, and inline wins. Shadow isn't a transform, so it stays here.
   &:hover {
     box-shadow: 0 22px 46px rgb(0 0 0 / 60%);
   }
@@ -138,9 +135,7 @@
     }
   }
 
-  // Each tone is set to the lightest value that still clears WCAG 4.5:1
-  // against white text. The brighter versions looked better in isolation but
-  // put the 13–14px card text at ~3:1, which is not readable.
+  // Lightest value that still clears WCAG 4.5:1 against white text.
   &[data-tone='citrus'] {
     --tone: #ba5b25; // 4.55:1
     --tone-deep: #8d4318;
@@ -162,11 +157,8 @@
   }
 }
 
-/// The plate. Absolutely positioned so it overhangs the card's top edge.
-///
-/// Uses the standalone `translate` and `scale` properties rather than
-/// `transform`, so the hover zoom composes with the centring instead of
-/// replacing it.
+/// Standalone `translate`/`scale`, not `transform`, so the hover zoom
+/// composes with the centring instead of replacing it.
 .cardArt {
   position: absolute;
   top: -3.25rem;
@@ -177,17 +169,14 @@
   width: 9.5rem;
   height: 9.5rem;
   border-radius: 50%;
-  // No plate. The circle straddles the card's top edge, so any fill would sit
-  // half on the card and half on the page behind it — a translucent one reads
-  // as a grey smudge against the dark background. The fruit carries its own
-  // depth through the drop-shadow below instead.
+  // No fill: the circle straddles the card edge, so any background sits half
+  // on the card and half on the page. Depth comes from the fruit's shadow.
   background: transparent;
   transition: scale var(--duration) var(--ease-out);
 }
 
-/// The shadow moves onto the fruit itself. `drop-shadow` follows the rendered
-/// shape, so a round fruit casts a round shadow — a `box-shadow` on the
-/// wrapper would cast the wrapper's box instead.
+/// `drop-shadow` follows the rendered shape, so a round fruit casts a round
+/// shadow — `box-shadow` would cast the wrapper's box.
 .cardFruit {
   filter: drop-shadow(0 10px 18px rgb(0 0 0 / 45%));
 }
@@ -202,11 +191,8 @@
   gap: 0.375rem;
 }
 
-/* ------------------------------------------------------------------ *
- * Card text — now sitting on a saturated background, so everything is
- * white with the secondary text carried by opacity rather than a grey.
- * A grey would muddy against four different card colours.
- * ------------------------------------------------------------------ */
+/* Card text sits on a saturated background: white, with secondary text
+ * carried by opacity — a grey would muddy against four different tones. */
 
 .tag {
   align-self: flex-start;
@@ -227,8 +213,7 @@
   letter-spacing: -0.01em;
 }
 
-// 92% rather than a lower alpha: the tones are already at the contrast floor
-// for pure white, so dimming the small text much further pushes it under.
+// 92%, not lower: the tones already sit at the contrast floor for white.
 .cardNote {
   color: rgb(255 255 255 / 92%);
   font-size: 0.875rem;
@@ -255,8 +240,7 @@
     border-color var(--duration-fast) var(--ease-out);
 
   &:hover {
-    // Inverts to the card's own colour on white — keeps each card's identity
-    // instead of every button turning the same green.
+    // Inverts to the card's own tone, so cards keep their identity.
     color: var(--tone-deep);
     background: #fff;
     border-color: #fff;

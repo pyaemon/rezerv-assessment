@@ -104,7 +104,7 @@ export function Collection() {
               <div className={styles.cardArt}>
                 <Fruit
                   kind={item.kind}
-                  size={112}
+                  size={125}
                   className={styles.cardFruit}
                 />
               </div>

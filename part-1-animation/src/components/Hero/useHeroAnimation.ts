@@ -9,18 +9,10 @@ import styles from './Hero.module.scss';
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Every piece of hero motion, in one place.
+ * Hero motion. Three DOM layers so nothing fights over `transform`:
+ * `.floater` = entrance + parallax, `.bob` = idle drift, fruit = mouse follow.
  *
- * Four things happen, on three different DOM layers, so that none of them
- * fight over the `transform` property:
- *
- *   .floater  entrance (scale + fade) and scroll parallax
- *   .bob      idle drift — a slow looping bob and tilt
- *   the fruit mouse-follow
- *
- * `gsap.matchMedia` builds a different set of animations per breakpoint and
- * reverts the previous set automatically when the query stops matching. That
- * is what makes resizing behave: no stale tweens, no leftover inline styles.
+ * `matchMedia` rebuilds per breakpoint and reverts the old set on the way out.
  */
 export function useHeroAnimation(
   rootRef: RefObject<HTMLElement | null>,
@@ -34,8 +26,7 @@ export function useHeroAnimation(
     const q = <T extends HTMLElement>(selector: string) =>
       Array.from(root.querySelectorAll<T>(selector));
 
-    // CSS Modules hash class names at build time, so the selector has to come
-    // from the imported `styles` object rather than a hard-coded string.
+    // CSS Modules hash class names, so selectors come from `styles`.
     const floaters = q(`.${styles.floater}`);
     const bobs = q(`.${styles.bob}`);
     const fruits = bobs
@@ -47,15 +38,11 @@ export function useHeroAnimation(
       `.${styles.eyebrow}, .${styles.lede}, .${styles.actions}, .${styles.scrollCue}`,
     );
 
-    // Centring is GSAP's job, not CSS's — see the note on `.floater`.
-    // xPercent/yPercent are relative to each element's own size, and GSAP
-    // recomputes them on refresh, so they survive the fruit changing size
-    // across breakpoints.
+    // GSAP owns centring, not CSS. xPercent is size-relative and recomputed on
+    // refresh, so it survives the fruit resizing across breakpoints.
     gsap.set(floaters, { xPercent: -50, yPercent: -50 });
 
-    // Hide the entrance targets straight away, while the loader still covers
-    // the page. Waiting until `introReady` would leave a frame of finished
-    // hero visible if the wipe ever ran early.
+    // Hide immediately, while the loader still covers the page.
     gsap.set(lines, { yPercent: 110 });
     gsap.set([...copy, ...floaters], { opacity: 0 });
 
@@ -75,26 +62,18 @@ export function useHeroAnimation(
           reduce: boolean;
         };
 
-        /* ---------------------------------------------------------- *
-         * Reduced motion — show the finished state, animate nothing.
-         * ---------------------------------------------------------- */
+        // Reduced motion: jump to the finished state.
         if (reduce) {
           gsap.set([...lines, ...copy], { opacity: 1, yPercent: 0, y: 0 });
           gsap.set(floaters, { opacity: 1, scale: 1 });
           return;
         }
 
-        /* ---------------------------------------------------------- *
-         * 1. Entrance — runs once the preloader hands over.
-         *
-         * `fromTo` rather than `from`, because the hidden state was already
-         * applied above: `from` would read those hidden values as the
-         * destination and animate nowhere.
-         * ---------------------------------------------------------- */
+        // 1. Entrance. `fromTo` not `from` — the hidden state is already
+        // applied above, so `from` would animate nowhere.
         gsap
           .timeline({ defaults: { ease: 'power3.out' } })
-          // The headline masks live in `.line`, which has overflow: hidden.
-          // Starting the inner span at yPercent 110 hides it behind that edge.
+          // `.line` has overflow:hidden; 110% starts the text behind its edge.
           .fromTo(
             lines,
             { yPercent: 110 },
@@ -119,12 +98,7 @@ export function useHeroAnimation(
             '-=0.9',
           );
 
-        /* ---------------------------------------------------------- *
-         * 2. Idle drift
-         *
-         * Randomised per fruit so they never move in lockstep, which is
-         * what stops it reading as a mechanical loop.
-         * ---------------------------------------------------------- */
+        // 2. Idle drift. Randomised per fruit so they never sync up.
         bobs.forEach((bob) => {
           gsap.to(bob, {
             y: gsap.utils.random(-14, -6),
@@ -137,13 +111,8 @@ export function useHeroAnimation(
           });
         });
 
-        /* ---------------------------------------------------------- *
-         * 3. Scroll parallax
-         *
-         * Each fruit moves at its own rate, so they separate in depth as
-         * the page scrolls. Function-based values are re-evaluated on
-         * ScrollTrigger.refresh(), which is what keeps resize correct.
-         * ---------------------------------------------------------- */
+        // 3. Parallax. Function values re-evaluate on refresh — that's what
+        // makes resize correct.
         floaters.forEach((floater) => {
           const speed = Number(floater.dataset.speed ?? 0.5);
 
@@ -160,13 +129,10 @@ export function useHeroAnimation(
           });
         });
 
-        /* ---------------------------------------------------------- *
-         * 4. Mouse follow — desktop only (no pointer to follow on touch)
-         * ---------------------------------------------------------- */
+        // 4. Mouse follow. Desktop only — nothing to follow on touch.
         if (!isDesktop) return;
 
-        // quickTo reuses one tween per property instead of allocating a new
-        // one on every mousemove.
+        // quickTo reuses one tween per property instead of one per mousemove.
         const movers = fruits.map((fruit, index) => {
           const speed = Number(floaters[index]?.dataset.speed ?? 0.5);
           return {
@@ -176,8 +142,7 @@ export function useHeroAnimation(
           };
         });
 
-        // Measured once, not per event — reading layout inside a mousemove
-        // handler forces a reflow on every pointer move.
+        // Measured once: getBoundingClientRect in a mousemove forces reflow.
         let bounds = root.getBoundingClientRect();
         const remeasure = () => {
           bounds = root.getBoundingClientRect();

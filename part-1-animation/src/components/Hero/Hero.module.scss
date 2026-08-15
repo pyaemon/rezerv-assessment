@@ -17,11 +17,9 @@
  * Floating fruit
  * ------------------------------------------------------------------ */
 
-/// Responsive fruit sizing is a custom property, not a `scale` transform.
-/// GSAP animates transforms on `.floater`, and when it does it absorbs any
-/// CSS `translate`/`scale` into its own matrix — after which a media query
-/// can no longer change them. Custom properties are invisible to GSAP, so
-/// the breakpoints keep working.
+/// Sizing is a custom property, not a `scale` transform: GSAP absorbs CSS
+/// transforms into its own matrix, after which media queries can't touch
+/// them. Custom properties are invisible to GSAP, so breakpoints keep working.
 .orbit {
   position: absolute;
   inset: 0;
@@ -38,11 +36,8 @@
   }
 }
 
-/// Layer 1 — position + scroll parallax target.
-///
-/// Deliberately carries NO transform of its own. Centring is done with GSAP's
-/// `xPercent/yPercent` in `useHeroAnimation`, so transforms have exactly one
-/// owner and nothing gets overwritten.
+/// Layer 1 — position + parallax target. Carries no transform of its own;
+/// GSAP centres it with xPercent/yPercent so transform has one owner.
 .floater {
   position: absolute;
   top: var(--top-sm);
@@ -96,9 +91,8 @@
   letter-spacing: -0.03em;
 }
 
-/// The mask. Its child is what you animate — `yPercent: 100` starts the
-/// text hidden below this edge. `padding-bottom` stops descenders (g, p, y)
-/// from being clipped once it lands.
+/// The mask. Its child animates from yPercent 110, hidden below this edge.
+/// `padding-bottom` stops descenders being clipped once it lands.
 .line {
   display: block;
   overflow: hidden;
