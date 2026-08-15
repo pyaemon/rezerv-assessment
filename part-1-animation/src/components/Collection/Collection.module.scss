@@ -176,12 +176,20 @@
   place-items: center;
   width: 9.5rem;
   height: 9.5rem;
-  background: #f7f4ec;
   border-radius: 50%;
-  // Keeps the fruit inside the plate as it rotates on scroll.
-  overflow: hidden;
-  box-shadow: 0 12px 26px rgb(0 0 0 / 35%);
+  // No plate. The circle straddles the card's top edge, so any fill would sit
+  // half on the card and half on the page behind it — a translucent one reads
+  // as a grey smudge against the dark background. The fruit carries its own
+  // depth through the drop-shadow below instead.
+  background: transparent;
   transition: scale var(--duration) var(--ease-out);
+}
+
+/// The shadow moves onto the fruit itself. `drop-shadow` follows the rendered
+/// shape, so a round fruit casts a round shadow — a `box-shadow` on the
+/// wrapper would cast the wrapper's box instead.
+.cardFruit {
+  filter: drop-shadow(0 10px 18px rgb(0 0 0 / 45%));
 }
 
 .card:hover .cardArt {

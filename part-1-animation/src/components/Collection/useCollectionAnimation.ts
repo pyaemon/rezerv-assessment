@@ -12,18 +12,8 @@ const TILT_DEGREES = 9;
 
 const HOVER_LIFT = 8;
 
-/**
- * All collection motion.
- *
- * Reveals are deliberately NOT scrubbed. Scrub ties an animation's playhead to
- * scroll position, which is right for parallax but wrong for a reveal — it
- * leaves cards frozen half-faded whenever the user stops mid-scroll. These
- * play once and reverse on the way back up.
- *
- * Everything lives inside `mm.add`, so `mm.revert()` tears all of it down:
- * tweens killed, ScrollTriggers destroyed, inline styles removed. Anything
- * created outside would leak on resize and on Fast Refresh.
- */
+// Collection reveal animations.
+// Keep inside matchMedia so they clean up correctly on resize.
 export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const root = rootRef.current;
