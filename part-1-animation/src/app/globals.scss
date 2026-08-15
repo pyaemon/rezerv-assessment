@@ -1,11 +1,22 @@
 :root {
+  // Tells the browser to render scrollbars, form controls and the default
+  // canvas dark, so they match the palette below.
   color-scheme: dark;
+
+  /* Surfaces */
   --bg: #0b0d0a;
   --surface: #161a14;
+
+  /* Text */
   --ink: #f2f4ef;
   --ink-muted: #9aa694;
+
+  /* Brand */
   --accent: #7fc94a;
-  --accent-soft: #1e2a16 /* Motion */ --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --accent-soft: #1e2a16;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --duration-fast: 200ms;
   --duration: 400ms;
@@ -40,6 +51,7 @@ body {
   font-family: var(--font-sans);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* Nothing should ever scroll the page sideways. */
   overflow-x: hidden;
 }
 
