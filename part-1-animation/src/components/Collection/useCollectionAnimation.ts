@@ -137,15 +137,19 @@ export function useCollectionAnimation(rootRef: RefObject<HTMLElement | null>) {
         }
 
         /* ---------------------------------------------------------- *
-         * 3. Fruit drifts and rotates as its card crosses the viewport
+         * 3. Fruit turns slowly in its plate as the card crosses the
+         *    viewport.
+         *
+         * Rotation only — no translation. The plate is a circle, so a fruit
+         * that also moved would drift against its edge and get clipped.
+         * Spinning in place stays contained at any scroll position.
          *
          * `ease: 'none'` because it's scrub-linked: any easing here would
          * make the fruit appear to lag the scroll.
          * ---------------------------------------------------------- */
         fruits.forEach((fruit, index) => {
           gsap.to(fruit, {
-            rotation: index % 2 === 0 ? 18 : -18,
-            y: -22,
+            rotation: index % 2 === 0 ? 24 : -24,
             ease: 'none',
             scrollTrigger: {
               trigger: fruit.closest(`.${styles.card}`),

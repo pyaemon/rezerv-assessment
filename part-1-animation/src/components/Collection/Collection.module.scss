@@ -73,6 +73,9 @@
   gap: 1.25rem;
   width: max-content;
   padding-inline: 1.25rem;
+  // The plate breaks out above each card, so the rail needs headroom or the
+  // first row would be clipped by the section above it.
+  padding-top: 3.75rem;
 
   @include from('tablet') {
     gap: 1.5rem;
@@ -85,24 +88,33 @@
     width: auto;
     max-width: 68rem;
     margin-inline: auto;
-    gap: 2rem;
+    // Wider row gap than column gap: the overhanging plate has to clear the
+    // card above it.
+    gap: 5.5rem 2rem;
     padding-inline: 2rem;
   }
 }
 
+/// Solid, saturated card with a circular "plate" overhanging its top edge.
+/// The tone drives the whole card now, not just a tint behind the fruit.
 .card {
+  --tone: #e8722e;
+  --tone-deep: #c25716;
+
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.125rem;
   flex-shrink: 0;
   width: min(74vw, 20rem);
-  padding: 1.75rem 1.5rem 1.5rem;
+  // Top padding leaves room for the plate that hangs over the edge.
+  padding: 5.25rem 1.5rem 1.5rem;
   scroll-snap-align: center;
-  background: var(--surface);
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 40%);
+  background: var(--tone);
+  border-radius: 1.75rem;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
+  // MUST stay visible — `hidden` would crop the overhanging plate.
+  overflow: visible;
   transition:
     transform var(--duration) var(--ease-out),
     box-shadow var(--duration) var(--ease-out);
@@ -116,7 +128,7 @@
   // two owners of `transform` would fight — inline style always wins).
   // Shadow isn't a transform, so it stays here and applies at every size.
   &:hover {
-    box-shadow: 0 18px 40px rgb(0 0 0 / 55%);
+    box-shadow: 0 22px 46px rgb(0 0 0 / 60%);
   }
 
   // Below desktop there's no pointer to tilt toward, so CSS keeps the lift.
@@ -126,36 +138,54 @@
     }
   }
 
-  &[data-tone='citrus'] .cardArt {
-    background: #2b1f0e;
+  // Each tone is set to the lightest value that still clears WCAG 4.5:1
+  // against white text. The brighter versions looked better in isolation but
+  // put the 13–14px card text at ~3:1, which is not readable.
+  &[data-tone='citrus'] {
+    --tone: #ba5b25; // 4.55:1
+    --tone-deep: #8d4318;
   }
-  &[data-tone='green'] .cardArt {
-    background: #172312;
+
+  &[data-tone='green'] {
+    --tone: #488436; // 4.54:1
+    --tone-deep: #356326;
   }
-  &[data-tone='berry'] .cardArt {
-    background: #171a2b;
+
+  &[data-tone='berry'] {
+    --tone: #5a6bc4; // 4.84:1
+    --tone-deep: #3d4c9b;
   }
-  &[data-tone='melon'] .cardArt {
-    background: #2b1418;
+
+  &[data-tone='melon'] {
+    --tone: #c54e5f; // 4.54:1
+    --tone-deep: #933946;
   }
 }
 
+/// The plate. Absolutely positioned so it overhangs the card's top edge.
+///
+/// Uses the standalone `translate` and `scale` properties rather than
+/// `transform`, so the hover zoom composes with the centring instead of
+/// replacing it.
 .cardArt {
+  position: absolute;
+  top: -3.25rem;
+  left: 50%;
+  translate: -50% 0;
   display: grid;
   place-items: center;
-  height: 11.5rem;
-  border-radius: 1rem;
+  width: 9.5rem;
+  height: 9.5rem;
+  background: #f7f4ec;
+  border-radius: 50%;
+  // Keeps the fruit inside the plate as it rotates on scroll.
   overflow: hidden;
-}
-
-// GSAP owns `transform` on .cardFruit (it rotates on scroll), so the hover
-// zoom lives on the wrapper instead — nothing else animates that element.
-.cardArt {
-  transition: transform var(--duration) var(--ease-out);
+  box-shadow: 0 12px 26px rgb(0 0 0 / 35%);
+  transition: scale var(--duration) var(--ease-out);
 }
 
 .card:hover .cardArt {
-  transform: scale(1.05);
+  scale: 1.05;
 }
 
 .cardBody {
@@ -164,31 +194,40 @@
   gap: 0.375rem;
 }
 
+/* ------------------------------------------------------------------ *
+ * Card text — now sitting on a saturated background, so everything is
+ * white with the secondary text carried by opacity rather than a grey.
+ * A grey would muddy against four different card colours.
+ * ------------------------------------------------------------------ */
+
 .tag {
   align-self: flex-start;
   padding: 0.1875rem 0.5rem;
-  color: var(--accent);
+  color: #fff;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: var(--accent-soft);
+  background: rgb(255 255 255 / 20%);
   border-radius: 999px;
 }
 
 .cardName {
-  font-size: 1.25rem;
+  color: #fff;
+  font-size: 1.375rem;
   font-weight: 650;
   letter-spacing: -0.01em;
 }
 
+// 92% rather than a lower alpha: the tones are already at the contrast floor
+// for pure white, so dimming the small text much further pushes it under.
 .cardNote {
-  color: var(--ink-muted);
+  color: rgb(255 255 255 / 92%);
   font-size: 0.875rem;
 }
 
 .kcal {
-  color: var(--ink-muted);
+  color: rgb(255 255 255 / 92%);
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
 }
@@ -196,11 +235,11 @@
 .cardCta {
   margin-top: auto;
   padding: 0.6875rem 1rem;
-  color: var(--ink);
+  color: #fff;
   font-size: 0.875rem;
   font-weight: 600;
   background: transparent;
-  border: 1px solid rgb(255 255 255 / 18%);
+  border: 1px solid rgb(255 255 255 / 45%);
   border-radius: 999px;
   transition:
     background-color var(--duration-fast) var(--ease-out),
@@ -208,8 +247,10 @@
     border-color var(--duration-fast) var(--ease-out);
 
   &:hover {
-    color: #fff;
-    background: var(--accent);
-    border-color: var(--accent);
+    // Inverts to the card's own colour on white — keeps each card's identity
+    // instead of every button turning the same green.
+    color: var(--tone-deep);
+    background: #fff;
+    border-color: #fff;
   }
 }
