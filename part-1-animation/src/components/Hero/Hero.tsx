@@ -6,67 +6,18 @@ import { Fruit, type FruitKind } from '@/components/Fruit/Fruit';
 import styles from './Hero.module.scss';
 import { useHeroAnimation } from './useHeroAnimation';
 
-/**
- * SECTION 2 — Hero.  ← LAYOUT ONLY. All animation is yours to write.
- *
- * The markup below is shaped to make the animation easy. Two structural
- * decisions worth understanding, because a reviewer may ask:
- *
- * 1. NESTED TRANSFORM LAYERS.
- *    Each fruit is wrapped in `.floater` (positioned, carries `data-speed`)
- *    which wraps `.bob` which wraps the fruit itself. Three layers because
- *    three different animations want the `transform` property at once:
- *      .floater → scroll parallax   (scrubbed)
- *      .bob     → idle drift        (looping)
- *      .fruit   → mouse follow      (quickTo)
- *    If they all shared one element, each would overwrite the others.
- *
- * 2. MASKED LINE REVEAL.
- *    The headline is `.line > span` pairs. `.line` has `overflow: hidden`,
- *    so animating the inner span from `yPercent: 100` slides the text up
- *    from behind its own edge. That's the reveal you see on sites like the
- *    reference. Don't flatten this structure.
- *
- * ── YOUR TODO LIST ─────────────────────────────────────────────────────
- * □ Entrance timeline (runs after the preloader finishes):
- *     .from('.line > span', { yPercent: 100, stagger: 0.08 })
- *     .from(fruits, { scale: 0.7, opacity: 0, stagger: 0.05 }, '<0.2')
- * □ Parallax: read `data-speed` off each .floater, move y on scroll with
- *   `scrub: true`. Use function-based values so resize re-measures.
- * □ Idle drift on `.bob`: a repeating yoyo tween, random delay per fruit so
- *   they don't move in lockstep.
- * □ Mouse follow with `gsap.quickTo` — listen on the section, not window.
- * □ Wrap the whole thing in `gsap.matchMedia()` so tablet/mobile get a
- *   simpler timeline and reduced-motion gets none. Return `mm.revert()`.
- *
- * Note: `.scrollCue` already animates in CSS — that one doesn't need GSAP.
- */
-
 interface Floater {
   id: string;
   kind: FruitKind;
   size: number;
-  /** Percentage position within the hero, tablet and up. */
   top: number;
   left: number;
-  /**
-   * Percentage position below tablet. On phones the copy fills the width, so
-   * fruit has to move into the bands above and below it rather than beside it.
-   * Falls back to the desktop position when omitted.
-   */
   mobileTop?: number;
   mobileLeft?: number;
-  /** Parallax multiplier — read this in your ScrollTrigger. */
   speed: number;
-  /** Hidden below desktop to keep smaller screens uncluttered. */
   desktopOnly?: boolean;
 }
 
-/**
- * Positions are kept outside the ~25–75% centre band, because that's where the
- * copy lives. Keeping fruit clear of the text is a layout constraint, not a
- * stylistic one — a floater over the headline reads as a bug.
- */
 const FLOATERS: readonly Floater[] = [
   {
     id: 'citrus',

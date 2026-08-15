@@ -1,12 +1,9 @@
 import type { Metadata } from 'next';
-
-// Ships with Lenis, so it always matches the installed version.
 import 'lenis/dist/lenis.css';
 import './globals.scss';
 
 export const metadata: Metadata = {
-  // TODO: your own title/description
-  title: 'Fuel — meal plans & cold-pressed drinks',
+  title: 'fuel meal plans & cold-pressed drinks',
   description:
     'Animation challenge: a single scroll-driven landing page for a fitness nutrition brand.',
 };

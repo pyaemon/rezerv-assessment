@@ -5,7 +5,7 @@
   padding: 5rem 0 6rem;
 
   @include from('desktop') {
-    padding: 7rem 0;
+    padding: 5rem 0;
   }
 }
 
@@ -33,18 +33,28 @@
 }
 
 .title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: clamp(1.75rem, 5vw, 3rem);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
 
-/* ------------------------------------------------------------------ *
- * Rail
- *
- * Mobile / tablet: a native swipeable strip — no JS, no pinning.
- * Desktop:         overflow hidden, because GSAP will translate the rail.
- * ------------------------------------------------------------------ */
+/// Same masked-line technique as the hero headline: `overflow: hidden` on the
+/// outer span, and the inner span animates up from behind that edge. Sharing
+/// the pattern is what makes the two sections feel like one page.
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+
+  > span {
+    display: block;
+    will-change: transform;
+  }
+}
 
 .viewport {
   overflow-x: auto;
@@ -70,16 +80,15 @@
   }
 
   @include from('desktop') {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: auto;
+    max-width: 68rem;
+    margin-inline: auto;
     gap: 2rem;
-    // Room to breathe at both ends of the pinned slide.
-    padding-inline: max(2rem, calc((100vw - 78rem) / 2));
-    will-change: transform;
+    padding-inline: 2rem;
   }
 }
-
-/* ------------------------------------------------------------------ *
- * Card
- * ------------------------------------------------------------------ */
 
 .card {
   position: relative;
@@ -91,36 +100,43 @@
   padding: 1.75rem 1.5rem 1.5rem;
   scroll-snap-align: center;
   background: var(--surface);
-  border: 1px solid rgb(20 33 15 / 8%);
+  border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 1.5rem;
-  box-shadow: 0 2px 10px rgb(20 33 15 / 5%);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 40%);
   transition:
     transform var(--duration) var(--ease-out),
     box-shadow var(--duration) var(--ease-out);
 
+  // In the desktop grid the column decides the width, so the card just fills it.
   @include from('desktop') {
-    width: 21rem;
+    width: auto;
   }
 
+  // The hover LIFT is handled by GSAP on desktop (it also tilts the card, and
+  // two owners of `transform` would fight — inline style always wins).
+  // Shadow isn't a transform, so it stays here and applies at every size.
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 40px rgb(20 33 15 / 12%);
+    box-shadow: 0 18px 40px rgb(0 0 0 / 55%);
+  }
+
+  // Below desktop there's no pointer to tilt toward, so CSS keeps the lift.
+  @include below('desktop') {
+    &:hover {
+      transform: translateY(-6px);
+    }
   }
 
   &[data-tone='citrus'] .cardArt {
-    background: #fff1dc;
+    background: #2b1f0e;
   }
-
   &[data-tone='green'] .cardArt {
-    background: #eaf5da;
+    background: #172312;
   }
-
   &[data-tone='berry'] .cardArt {
-    background: #e6e9f6;
+    background: #171a2b;
   }
-
   &[data-tone='melon'] .cardArt {
-    background: #ffe6e8;
+    background: #2b1418;
   }
 }
 
@@ -129,16 +145,17 @@
   place-items: center;
   height: 11.5rem;
   border-radius: 1rem;
-  // Contains the fruit's hover scale without a repaint of the whole card.
   overflow: hidden;
 }
 
-.cardFruit {
+// GSAP owns `transform` on .cardFruit (it rotates on scroll), so the hover
+// zoom lives on the wrapper instead — nothing else animates that element.
+.cardArt {
   transition: transform var(--duration) var(--ease-out);
 }
 
-.card:hover .cardFruit {
-  transform: scale(1.08) rotate(-6deg);
+.card:hover .cardArt {
+  transform: scale(1.05);
 }
 
 .cardBody {
@@ -183,7 +200,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   background: transparent;
-  border: 1px solid rgb(20 33 15 / 15%);
+  border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 999px;
   transition:
     background-color var(--duration-fast) var(--ease-out),

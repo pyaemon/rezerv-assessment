@@ -1,13 +1,6 @@
 @use 'sass:list';
 @use 'sass:math';
 
-/* ------------------------------------------------------------------ *
- * Helpers
- * ------------------------------------------------------------------ */
-
-/// Scatters `$count` dots evenly around a circle and returns them as a
-/// comma-separated list of radial-gradients, ready to hand to `background`.
-/// Used for kiwi and melon seeds so they aren't hand-positioned by eye.
 @function seed-ring($count, $radius, $size, $color, $offset: 0deg) {
   $result: ();
 
@@ -26,19 +19,8 @@
   @return $result;
 }
 
-/* ------------------------------------------------------------------ *
- * Base
- *
- * `font-size: var(--size)` is the trick that makes everything inside
- * scale: every internal measurement below is in `em`, so one --size
- * drives the whole drawing.
- * ------------------------------------------------------------------ */
-
 .fruit {
-  // `--fruit-scale` lets an ancestor resize a whole group per breakpoint
-  // without touching transforms. Defaults to 1 when nothing sets it.
   --rendered: calc(var(--size, 120px) * var(--fruit-scale, 1));
-
   position: relative;
   display: block;
   flex-shrink: 0;
@@ -46,7 +28,6 @@
   height: var(--rendered);
   font-size: var(--rendered);
   border-radius: 50%;
-  // Promotes the shape to its own layer so transforms don't repaint it.
   backface-visibility: hidden;
 }
 
@@ -57,14 +38,9 @@
   border-radius: 50%;
 }
 
-/* ------------------------------------------------------------------ *
- * Whole fruit
- * ------------------------------------------------------------------ */
-
 .orange,
 .lime,
 .berry {
-  // Offset highlight top-left, shadow bottom-right — reads as a sphere.
   box-shadow:
     inset -0.07em -0.09em 0.14em rgb(90 40 0 / 30%),
     inset 0.05em 0.06em 0.1em rgb(255 255 255 / 25%);
@@ -76,7 +52,6 @@
     radial-gradient(circle at 50% 55%, #f79420 0 55%, #dd6f08 100%);
 }
 
-/* Dimple where the stalk was. */
 .orange::before {
   inset: 8% auto auto 44%;
   width: 0.1em;
@@ -104,7 +79,6 @@
     radial-gradient(circle at 50% 55%, #43508f 0 52%, #1e2450 100%);
 }
 
-/* The pale crown on top of a blueberry. */
 .berry::before {
   inset: 26% 26% auto auto;
   top: 12%;
@@ -131,15 +105,6 @@
   opacity: 0.9;
 }
 
-/* ------------------------------------------------------------------ *
- * Slices
- *
- * Same three-layer recipe each time:
- *   element  → rind
- *   ::before → pith / inner flesh
- *   ::after  → segments or seeds
- * ------------------------------------------------------------------ */
-
 .citrus {
   background: linear-gradient(150deg, #f9a33a, #e07a10);
   box-shadow: inset -0.04em -0.05em 0.09em rgb(120 60 0 / 25%);
@@ -150,7 +115,6 @@
   background: #fff4de;
 }
 
-/* Alternating flesh wedges separated by thin pith lines. */
 .citrus::after {
   inset: 9%;
   background: repeating-conic-gradient(
@@ -174,7 +138,6 @@
 
 .kiwi::after {
   inset: 6%;
-  // 14 seeds on a ring at 26% of the radius.
   background: seed-ring(14, 26%, 0.024em, rgb(38 30 12 / 88%));
 }
 
@@ -185,12 +148,10 @@
 .melon::before {
   inset: 5%;
   background:
-    radial-gradient(circle at 50% 50%, #ff6b78 0 78%, #f24a5c 100%),
-    #fdfdf2;
+    radial-gradient(circle at 50% 50%, #ff6b78 0 78%, #f24a5c 100%), #fdfdf2;
   box-shadow: inset 0 0 0 0.055em #fdfdf2;
 }
 
-/* Two offset rings of seeds so they don't look mechanically placed. */
 .melon::after {
   inset: 5%;
   background:

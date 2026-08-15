@@ -52,8 +52,6 @@
     display: none;
   }
 
-  // Positions don't switch until desktop: below that the copy column is
-  // nearly full-bleed, so there's no room beside it — only above and below.
   @include from('desktop') {
     top: var(--top);
     left: var(--left);
@@ -69,10 +67,6 @@
   display: block;
   will-change: transform;
 }
-
-/* ------------------------------------------------------------------ *
- * Copy
- * ------------------------------------------------------------------ */
 
 .inner {
   position: relative;
@@ -172,7 +166,7 @@
 .ghost {
   color: var(--ink);
   background: transparent;
-  border: 1px solid rgb(20 33 15 / 18%);
+  border: 1px solid rgb(255 255 255 / 22%);
 
   &:hover {
     background: var(--accent-soft);
@@ -204,7 +198,7 @@
   width: 1px;
   height: 2.75rem;
   overflow: hidden;
-  background: rgb(20 33 15 / 15%);
+  background: rgb(255 255 255 / 18%);
 
   &::after {
     content: '';

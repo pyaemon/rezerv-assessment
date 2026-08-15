@@ -1,7 +1,5 @@
 @use '../../styles/mixins' as *;
 
-/// Applied to <html> while the loader is up, so the page can't scroll
-/// underneath it. Exported through the CSS-Modules object and toggled in JS.
 :global(html).locked,
 .locked {
   overflow: hidden;
@@ -26,14 +24,9 @@
   gap: 0.75rem;
 }
 
-/* ------------------------------------------------------------------ *
- * Activity ring
- * ------------------------------------------------------------------ */
-
 .ring {
   width: 7.5rem;
   height: 7.5rem;
-  // Start the fill at 12 o'clock instead of 3 o'clock.
   transform: rotate(-90deg);
   overflow: visible;
 
@@ -51,7 +44,7 @@
 }
 
 .track {
-  stroke: rgb(20 33 15 / 8%);
+  stroke: rgb(255 255 255 / 12%);
 }
 
 .progress {

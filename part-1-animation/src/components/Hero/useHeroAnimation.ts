@@ -66,6 +66,7 @@ export function useHeroAnimation(
     mm.add(
       {
         isDesktop: '(min-width: 1024px)',
+        isMobile: '(max-width: 1023.98px)',
         reduce: '(prefers-reduced-motion: reduce)',
       },
       (context) => {

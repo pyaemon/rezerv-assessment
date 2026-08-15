@@ -6,21 +6,6 @@ import { Fruit, type FruitKind } from '@/components/Fruit/Fruit';
 import styles from './Collection.module.scss';
 import { useCollectionAnimation } from './useCollectionAnimation';
 
-/**
- * SECTION 3 — Collection.
- *
- * `.viewport` is the window, `.rail` is the strip inside it. On desktop the
- * cards sit side by side; below that the viewport becomes a natively
- * swipeable, scroll-snapping strip, so touch scrolling is never intercepted.
- *
- * Motion is split by cost:
- *   • Scroll reveals — `useCollectionAnimation`
- *   • Hover (card lift, fruit zoom, button fill) — plain CSS transitions
- *
- * Hover doesn't need a JS animation library. Keeping it in CSS means those
- * interactions cost nothing at runtime and keep working if GSAP never loads.
- */
-
 interface Item {
   id: string;
   name: string;
@@ -28,9 +13,11 @@ interface Item {
   category: 'Drink' | 'Meal';
   kcal: number;
   note: string;
-  /** Drives the card's background tint. */
   tone: 'citrus' | 'green' | 'berry' | 'melon';
 }
+
+/** Split by hand so each line can be revealed from behind its own mask. */
+const TITLE_LINES = ['Six ways to fuel', 'a training week'];
 
 const ITEMS: readonly Item[] = [
   {
@@ -97,15 +84,29 @@ export function Collection() {
     <section ref={rootRef} className={styles.collection}>
       <div className={styles.head}>
         <p className={styles.eyebrow}>This week&apos;s line-up</p>
-        <h2 className={styles.title}>Six ways to fuel a training week</h2>
+        <h2 className={styles.title}>
+          {TITLE_LINES.map((line) => (
+            <span key={line} className={styles.line}>
+              <span>{line}</span>
+            </span>
+          ))}
+        </h2>
       </div>
 
       <div className={styles.viewport}>
         <div className={styles.rail}>
           {ITEMS.map((item) => (
-            <article key={item.id} className={styles.card} data-tone={item.tone}>
+            <article
+              key={item.id}
+              className={styles.card}
+              data-tone={item.tone}
+            >
               <div className={styles.cardArt}>
-                <Fruit kind={item.kind} size={150} className={styles.cardFruit} />
+                <Fruit
+                  kind={item.kind}
+                  size={150}
+                  className={styles.cardFruit}
+                />
               </div>
 
               <div className={styles.cardBody}>
