@@ -3,7 +3,7 @@
 A generic, fully typed data table built from scratch (no TanStack Table, AG Grid,
 MUI DataGrid or similar), used to render a fitness studio's class timetable.
 
-**Live demo:** _add your deployed URL here_
+**Live demo:** <https://rezerv-assessment-yw1i.vercel.app>
 
 - `/` — **Class timetable.** Real usage: expandable classes, attendees as child
   rows, client-side sort and pagination.

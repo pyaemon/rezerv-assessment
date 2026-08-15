@@ -4,8 +4,8 @@ Two independent parts, one repository.
 
 | Part | What it is | Code | Live |
 | --- | --- | --- | --- |
-| **Part 1** | UI Animation Challenge — animated landing page | [`part-1-animation/`](./part-1-animation) | _add URL_ |
-| **Part 2** | Component Engineering Challenge — reusable data table | [`part-2-data-table/`](./part-2-data-table) | _add URL_ |
+| **Part 1** | UI Animation Challenge — animated landing page | [`part-1-animation/`](./part-1-animation) | **[rezerv-assessment.vercel.app](https://rezerv-assessment.vercel.app)** |
+| **Part 2** | Component Engineering Challenge — reusable data table | [`part-2-data-table/`](./part-2-data-table) | **[rezerv-assessment-yw1i.vercel.app](https://rezerv-assessment-yw1i.vercel.app)** |
 
 Each part is a standalone app with its own README, dependencies and deployment.
 

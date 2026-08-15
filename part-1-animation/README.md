@@ -3,7 +3,7 @@
 A single scroll-driven landing page for a fictional fitness-nutrition brand,
 built to exercise load, scroll, hover and resize animation.
 
-**Live demo:** _add your deployed URL here_
+**Live demo:** <https://rezerv-assessment.vercel.app>
 
 The reference site was used for the *feel* of the motion, not its content. All
 assets here are original: every fruit is drawn in CSS — gradients,
