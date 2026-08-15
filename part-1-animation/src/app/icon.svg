@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Citrus slice">
+  <!-- Rind, pith, flesh — the same three layers as the CSS citrus. -->
+  <circle cx="16" cy="16" r="15.5" fill="#e8722e" />
+  <circle cx="16" cy="16" r="12.8" fill="#fff4de" />
+  <circle cx="16" cy="16" r="11.2" fill="#ffa53d" />
+
+  <!-- Segment dividers. Straight strokes rather than wedges: at 16px the
+       detail of real wedges disappears, but strong spokes still read. -->
+  <g stroke="#fff4de" stroke-width="1.7" stroke-linecap="round">
+    <path d="M16 16 5.9 16" />
+    <path d="M16 16 8.9 8.9" />
+    <path d="M16 16 16 5.9" />
+    <path d="M16 16 23.1 8.9" />
+    <path d="M16 16 26.1 16" />
+    <path d="M16 16 23.1 23.1" />
+    <path d="M16 16 16 26.1" />
+    <path d="M16 16 8.9 23.1" />
+  </g>
+
+  <circle cx="16" cy="16" r="1.6" fill="#fff4de" />
+</svg>
