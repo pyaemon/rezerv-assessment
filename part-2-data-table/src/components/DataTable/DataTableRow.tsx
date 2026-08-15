@@ -163,11 +163,8 @@ function DataTableRowInner<TRow, TChild>({
       {expansion && expandable && (
         <tr className={styles.panelRow}>
           <td className={styles.panelCell} colSpan={colSpan}>
-            {/*
-              The 0fr -> 1fr grid transition animates to the panel's natural
-              height without measuring it in JS, so expanding never reads
-              layout and never triggers a forced reflow.
-            */}
+            {/* 0fr -> 1fr animates to the panel's natural height with no JS
+                measurement, so expanding never forces a reflow. */}
             <div className={styles.collapsible} data-open={expanded}>
               <div
                 className={styles.collapsibleInner}
@@ -184,9 +181,6 @@ function DataTableRowInner<TRow, TChild>({
   );
 }
 
-/**
- * `memo` keeps untouched rows out of the render pass when a single row is
- * expanded or a sibling's children arrive. The cast preserves the generic
- * signature, which `memo` would otherwise erase.
- */
+/** `memo` keeps untouched rows out of the render pass when one row expands.
+ *  The cast preserves the generic signature, which `memo` would erase. */
 export const DataTableRow = memo(DataTableRowInner) as typeof DataTableRowInner;

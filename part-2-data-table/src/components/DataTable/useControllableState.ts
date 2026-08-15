@@ -5,14 +5,9 @@ import { useCallback, useRef, useState } from 'react';
 type Updater<T> = T | ((previous: T) => T);
 
 /**
- * One state hook that works in both controlled and uncontrolled mode.
- *
- * Passing `undefined` for `controlled` keeps the state internal; passing any
- * other value (including `null`) hands ownership to the parent. This is what
- * lets a single `<DataTable>` drive both a client-side table and a
- * server-driven one without a second code path.
- *
- * The setter is referentially stable, so it can be depended on freely.
+ * Works in both controlled and uncontrolled mode: `undefined` keeps state
+ * internal, any other value (including `null`) hands ownership to the parent.
+ * One `<DataTable>` then drives client- and server-side without a second path.
  */
 export function useControllableState<T>(
   controlled: T | undefined,
@@ -24,7 +19,7 @@ export function useControllableState<T>(
   const isControlled = controlled !== undefined;
   const value = isControlled ? (controlled as T) : internal;
 
-  // Refs keep `setValue` stable without going stale between renders.
+  // Refs keep `setValue` stable without going stale.
   const latest = useRef({ value, isControlled, onChange });
   latest.current = { value, isControlled, onChange };
 

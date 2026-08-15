@@ -8,13 +8,11 @@ export interface HorizontalScrollState {
 }
 
 /**
- * Tracks whether a horizontally scrollable element is at its start / end, so
- * the pinned column can cast a shadow only when content is actually sliding
- * underneath it.
+ * Tracks whether a scroller is at its start / end, so the pinned column casts
+ * a shadow only when content slides under it.
  *
- * The scroll listener is passive and rAF-throttled, and the state setter bails
- * out unless a boundary is actually crossed — so scrolling produces at most
- * two React renders in total rather than one per frame.
+ * Passive and rAF-throttled, and the setter bails unless a boundary is
+ * crossed — so a full scroll costs two renders, not one per frame.
  */
 export function useHorizontalScroll(
   ref: RefObject<HTMLElement | null>,

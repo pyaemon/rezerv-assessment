@@ -90,11 +90,8 @@ export function DataTable<TRow, TChild = unknown>({
     [table.columns],
   );
 
-  /**
-   * With `table-layout: fixed`, a declared min-width is what makes the table
-   * overflow (and therefore scroll) instead of squeezing columns below their
-   * intended size on tablet and mobile.
-   */
+  // With `table-layout: fixed`, a min-width is what makes the table overflow
+  // (and so scroll) instead of squeezing columns below their intended size.
   const minTableWidth = useMemo(
     () =>
       (expansion ? EXPANDER_WIDTH : 0) +

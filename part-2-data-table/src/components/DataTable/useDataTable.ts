@@ -10,9 +10,7 @@ import type {
   SortState,
 } from './types';
 
-/* ------------------------------------------------------------------ *
- * Comparators
- * ------------------------------------------------------------------ */
+/* Comparators */
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -21,11 +19,8 @@ const collator = new Intl.Collator(undefined, {
 
 const isNil = (value: unknown): boolean => value === null || value === undefined;
 
-/**
- * Type-aware fallback comparator. Numbers, dates and booleans compare
- * naturally; everything else falls back to a numeric-aware collator so
- * "Studio 2" sorts before "Studio 10".
- */
+/** Numbers, dates and booleans compare naturally; the rest use a
+ *  numeric-aware collator, so "Studio 2" sorts before "Studio 10". */
 export function defaultComparator(a: unknown, b: unknown): number {
   if (typeof a === 'number' && typeof b === 'number') return a - b;
   if (a instanceof Date && b instanceof Date) return a.getTime() - b.getTime();
@@ -35,9 +30,7 @@ export function defaultComparator(a: unknown, b: unknown): number {
   return collator.compare(String(a), String(b));
 }
 
-/* ------------------------------------------------------------------ *
- * Options / instance
- * ------------------------------------------------------------------ */
+/* Options / instance */
 
 export interface UseDataTableOptions<TRow> {
   data: readonly TRow[];
@@ -86,10 +79,8 @@ export interface DataTableInstance<TRow> {
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-/**
- * Headless table logic: sorting, pagination and column layout. Renders
- * nothing, so it can drive `<DataTable>` or any other presentation.
- */
+/** Headless: sorting, pagination, column layout. Renders nothing, so it can
+ *  drive `<DataTable>` or any other presentation. */
 export function useDataTable<TRow>(
   options: UseDataTableOptions<TRow>,
 ): DataTableInstance<TRow> {

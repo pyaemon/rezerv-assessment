@@ -5,9 +5,7 @@ import type { ReactNode } from 'react';
 
 import { useControllableState } from './useControllableState';
 
-/* ------------------------------------------------------------------ *
- * Types
- * ------------------------------------------------------------------ */
+/* Types */
 
 export type ChildState<TChild> =
   | { status: 'idle' }
@@ -66,18 +64,14 @@ export interface RowExpansion<TRow, TChild> {
 const toError = (value: unknown): Error =>
   value instanceof Error ? value : new Error(String(value));
 
-/* ------------------------------------------------------------------ *
- * Hook
- * ------------------------------------------------------------------ */
+/* Hook */
 
 /**
- * Owns expanded-row state for both supported modes.
+ * Expanded-row state for both modes.
  *
- * Fetches are kicked off from the toggle handler rather than an effect: the
- * fetch is a consequence of a user action, not of rendering, and doing it here
- * means no double-fetch under StrictMode and no effect dependency juggling.
- * Results are cached per row id, so collapsing and re-expanding is free, and
- * an in-flight request is aborted if the user collapses the row first.
+ * Fetches fire from the toggle handler, not an effect — the fetch follows a
+ * user action, not a render, so no double-fetch under StrictMode. Results are
+ * cached per row id; in-flight requests abort if the row is collapsed first.
  */
 export function useRowExpansion<TRow, TChild>(
   config: ExpansionConfig<TRow, TChild>,

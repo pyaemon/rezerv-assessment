@@ -7,11 +7,8 @@ export interface MiniTableColumn {
   align?: 'left' | 'right';
 }
 
-/**
- * The compact table used inside expanded rows. Deliberately *not* `DataTable`:
- * child rows need no sorting, pagination or pinning, and reaching for the full
- * component here would cost more than it returns.
- */
+/** Compact table for expanded rows. Deliberately not `DataTable` — child rows
+ *  need no sorting, pagination or pinning. */
 export function MiniTable({
   caption,
   columns,

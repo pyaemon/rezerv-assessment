@@ -1,7 +1,6 @@
 /**
- * All formatters are locale-pinned. Next.js renders these components on the
- * server first, and an unpinned `toLocaleString()` can resolve differently
- * there than in the browser — which shows up as a hydration mismatch.
+ * Locale-pinned throughout: an unpinned `toLocaleString()` can resolve
+ * differently on the server than in the browser — a hydration mismatch.
  */
 
 const numberFormatter = new Intl.NumberFormat('en-US');

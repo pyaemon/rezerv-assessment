@@ -1,8 +1,7 @@
 /**
- * A stand-in for the real backend, shaped like one: every call is async, takes
- * an `AbortSignal`, has latency, and can fail. Server-side sorting and
- * pagination happen *here*, not in the component — which is the whole point of
- * the table's controlled mode.
+ * Shaped like a real backend: async, takes an `AbortSignal`, has latency, can
+ * fail. Server-side sort and pagination happen here, not in the component —
+ * which is the point of the table's controlled mode.
  */
 
 import type { SortState } from '@/components/DataTable';
@@ -72,9 +71,7 @@ export function delay(ms: number, signal?: AbortSignal): Promise<void> {
   });
 }
 
-/* ------------------------------------------------------------------ *
- * Timetable
- * ------------------------------------------------------------------ */
+/* Timetable */
 
 export async function fetchClassSessions(
   options: RequestOptions = {},
@@ -106,9 +103,7 @@ export async function fetchAttendees(
   return session.attendees.map((attendee) => ({ ...attendee }));
 }
 
-/* ------------------------------------------------------------------ *
- * Invoices — server-side sort + pagination
- * ------------------------------------------------------------------ */
+/* Invoices — server-side sort + pagination */
 
 const INVOICE_SORTERS: Record<string, (a: Invoice, b: Invoice) => number> = {
   reference: (a, b) => a.reference.localeCompare(b.reference),

@@ -45,10 +45,8 @@ export function ChevronLastIcon({ className }: { className?: string }) {
   );
 }
 
-/**
- * Three-state sort affordance. The inactive state stays visible but dimmed so
- * the header doesn't reflow when sorting turns on.
- */
+/** Three-state sort icon. The inactive state stays visible but dimmed, so the
+ *  header doesn't reflow when sorting turns on. */
 export function SortIcon({
   direction,
   className,

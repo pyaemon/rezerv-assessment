@@ -1,12 +1,7 @@
 @use '../styles/mixins' as *;
 
-/* ------------------------------------------------------------------ *
- * Design tokens
- *
- * Everything below the token block reads from these variables — no
- * component hard-codes a colour, radius or shadow. Retheming the whole
- * dashboard is a single edit here.
- * ------------------------------------------------------------------ */
+/* Design tokens. Nothing below hard-codes a colour, radius or shadow —
+ * retheming the dashboard is one edit here. */
 
 :root {
   color-scheme: light;
@@ -66,9 +61,7 @@
     ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 }
 
-/* ------------------------------------------------------------------ *
- * Reset
- * ------------------------------------------------------------------ */
+/* Reset */
 
 *,
 *::before,

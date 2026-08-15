@@ -1,9 +1,6 @@
 /**
- * Seeded fixtures for the class timetable.
- *
- * Everything is generated from a fixed seed and stored as timezone-free
- * primitives (an ISO date string plus minutes-from-midnight), so the server
- * render and the client render always agree.
+ * Seeded fixtures. Fixed seed, and timezone-free primitives (ISO date +
+ * minutes-from-midnight), so server and client renders always agree.
  */
 
 export type ClassStatus = 'scheduled' | 'full' | 'cancelled';
@@ -37,9 +34,7 @@ export interface ClassSession {
   attendees: Attendee[];
 }
 
-/* ------------------------------------------------------------------ *
- * Deterministic pseudo-random source
- * ------------------------------------------------------------------ */
+/* Deterministic pseudo-random source */
 
 function mulberry32(seed: number): () => number {
   let state = seed;
@@ -55,9 +50,7 @@ function mulberry32(seed: number): () => number {
 const pick = <T,>(random: () => number, items: readonly T[]): T =>
   items[Math.floor(random() * items.length)] as T;
 
-/* ------------------------------------------------------------------ *
- * Source vocabulary
- * ------------------------------------------------------------------ */
+/* Source vocabulary */
 
 const CLASS_NAMES = [
   'Vinyasa Flow',

@@ -1,8 +1,6 @@
 /**
- * A deliberately different row shape from `ClassSession` — different keys,
- * different value types, currency amounts, a lazily-fetched child collection.
- * Rendering both with the same `<DataTable>` is what proves the component
- * isn't quietly coupled to the timetable.
+ * Deliberately a different row shape from `ClassSession`. Rendering both with
+ * the same `<DataTable>` proves it isn't coupled to the timetable.
  */
 
 export type InvoiceStatus = 'paid' | 'open' | 'overdue' | 'refunded';

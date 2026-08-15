@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 
-/* ------------------------------------------------------------------ *
- * Sorting
- * ------------------------------------------------------------------ */
+/* Sorting */
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -12,9 +10,7 @@ export interface SortState {
   direction: SortDirection;
 }
 
-/* ------------------------------------------------------------------ *
- * Columns
- * ------------------------------------------------------------------ */
+/* Columns */
 
 export interface CellContext<TRow, TValue> {
   /** Result of `column.accessor(row)`, computed once per cell render. */
@@ -48,11 +44,8 @@ export interface ColumnDef<TRow, TValue = unknown> {
   headerLabel?: string;
 }
 
-/**
- * Columns are heterogeneous in their value type, so collections of them are
- * held at `any`. Per-column type safety is preserved at the definition site by
- * `createColumnHelper`.
- */
+/** Heterogeneous value types, so collections are held at `any`.
+ *  Per-column safety comes from `createColumnHelper` at the definition site. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyColumnDef<TRow> = ColumnDef<TRow, any>;
 
@@ -74,17 +67,10 @@ export interface PreparedRow<TRow> {
 }
 
 /**
- * Gives full inference at the definition site:
+ * Infers `TValue` from the accessor, so `cell({ value })` is typed rather than
+ * widened to `unknown`:
  *
- * ```ts
- * const col = createColumnHelper<ClassSession>();
- * col.accessor((r) => r.attendeeCount, {
- *   id: 'attendance',
- *   header: 'Attendance',
- *   // `value` is inferred as number
- *   cell: ({ value, row }) => `${value} / ${row.capacity}`,
- * });
- * ```
+ *   col.accessor((r) => r.booked, { cell: ({ value }) => value + 1 })
  */
 export function createColumnHelper<TRow>() {
   return {
