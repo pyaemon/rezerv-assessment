@@ -7,7 +7,6 @@ import styles from './DataTable.module.scss';
 import { DataTableRow, EXPANDER_WIDTH } from './DataTableRow';
 import { Pagination } from './Pagination';
 import { AlertIcon, InboxIcon, SortIcon } from './icons';
-import type { AnyColumnDef } from './types';
 import { useDataTable, type UseDataTableOptions } from './useDataTable';
 import { useHorizontalScroll } from './useHorizontalScroll';
 import { useRowExpansion, type ExpansionConfig } from './useRowExpansion';
@@ -90,8 +89,6 @@ export function DataTable<TRow, TChild = unknown>({
     [table.columns],
   );
 
-  // With `table-layout: fixed`, a min-width is what makes the table overflow
-  // (and so scroll) instead of squeezing columns below their intended size.
   const minTableWidth = useMemo(
     () =>
       (expansion ? EXPANDER_WIDTH : 0) +
@@ -109,10 +106,10 @@ export function DataTable<TRow, TChild = unknown>({
   const statusMessage = error
     ? 'Failed to load data.'
     : isLoading
-      ? 'Loading data.'
-      : table.rowCount === 0
-        ? 'No results.'
-        : `Showing rows ${table.range.from} to ${table.range.to} of ${table.rowCount}.`;
+    ? 'Loading data.'
+    : table.rowCount === 0
+    ? 'No results.'
+    : `Showing rows ${table.range.from} to ${table.range.to} of ${table.rowCount}.`;
 
   return (
     <div className={cx(styles.root, className)}>
@@ -164,7 +161,9 @@ export function DataTable<TRow, TChild = unknown>({
                   const sortable = column.sortable === true;
                   const label =
                     column.headerLabel ??
-                    (typeof column.header === 'string' ? column.header : column.id);
+                    (typeof column.header === 'string'
+                      ? column.header
+                      : column.id);
 
                   return (
                     <th
@@ -173,7 +172,9 @@ export function DataTable<TRow, TChild = unknown>({
                       className={cx(
                         styles.th,
                         pinnedOffset !== null && styles.pinned,
-                        pinnedOffset !== null && isLastPinned && styles.lastPinned,
+                        pinnedOffset !== null &&
+                          isLastPinned &&
+                          styles.lastPinned,
                       )}
                       style={
                         pinnedOffset !== null
@@ -188,10 +189,10 @@ export function DataTable<TRow, TChild = unknown>({
                         sortDirection === 'asc'
                           ? 'ascending'
                           : sortDirection === 'desc'
-                            ? 'descending'
-                            : sortable
-                              ? 'none'
-                              : undefined
+                          ? 'descending'
+                          : sortable
+                          ? 'none'
+                          : undefined
                       }
                     >
                       {sortable ? (
@@ -208,7 +209,9 @@ export function DataTable<TRow, TChild = unknown>({
                           />
                         </button>
                       ) : (
-                        <span className={styles.headerText}>{column.header}</span>
+                        <span className={styles.headerText}>
+                          {column.header}
+                        </span>
                       )}
                     </th>
                   );
@@ -221,10 +224,15 @@ export function DataTable<TRow, TChild = unknown>({
             {error && (
               <tr>
                 <td colSpan={colSpan} className={styles.stateCell}>
-                  <div className={cx(styles.state, styles.stateError)} role="alert">
+                  <div
+                    className={cx(styles.state, styles.stateError)}
+                    role="alert"
+                  >
                     <AlertIcon className={styles.stateIcon} />
                     <div>
-                      <p className={styles.stateTitle}>Couldn&apos;t load data</p>
+                      <p className={styles.stateTitle}>
+                        Couldn&apos;t load data
+                      </p>
                       <p className={styles.stateBody}>
                         {error.message || 'An unexpected error occurred.'}
                       </p>
@@ -247,37 +255,48 @@ export function DataTable<TRow, TChild = unknown>({
               Array.from({ length: skeletonRowCount }, (_, rowIndex) => (
                 <tr key={`skeleton-${rowIndex}`} className={styles.row}>
                   {expansion && (
-                    <td className={cx(styles.cell, styles.pinned, styles.expanderCell)} style={{ left: 0 }}>
+                    <td
+                      className={cx(
+                        styles.cell,
+                        styles.pinned,
+                        styles.expanderCell,
+                      )}
+                      style={{ left: 0 }}
+                    >
                       <span className={styles.skeletonCircle} />
                     </td>
                   )}
-                  {table.columns.map(({ column, pinnedOffset }, columnIndex) => (
-                    <td
-                      key={column.id}
-                      className={cx(
-                        styles.cell,
-                        pinnedOffset !== null && styles.pinned,
-                      )}
-                      style={
-                        pinnedOffset !== null
-                          ? {
-                              left:
-                                (expansion ? EXPANDER_WIDTH : 0) + pinnedOffset,
-                            }
-                          : undefined
-                      }
-                    >
-                      <span
-                        className={styles.skeleton}
-                        style={{
-                          width:
-                            SKELETON_WIDTHS[
-                              (rowIndex + columnIndex) % SKELETON_WIDTHS.length
-                            ],
-                        }}
-                      />
-                    </td>
-                  ))}
+                  {table.columns.map(
+                    ({ column, pinnedOffset }, columnIndex) => (
+                      <td
+                        key={column.id}
+                        className={cx(
+                          styles.cell,
+                          pinnedOffset !== null && styles.pinned,
+                        )}
+                        style={
+                          pinnedOffset !== null
+                            ? {
+                                left:
+                                  (expansion ? EXPANDER_WIDTH : 0) +
+                                  pinnedOffset,
+                              }
+                            : undefined
+                        }
+                      >
+                        <span
+                          className={styles.skeleton}
+                          style={{
+                            width:
+                              SKELETON_WIDTHS[
+                                (rowIndex + columnIndex) %
+                                  SKELETON_WIDTHS.length
+                              ],
+                          }}
+                        />
+                      </td>
+                    ),
+                  )}
                 </tr>
               ))}
 
