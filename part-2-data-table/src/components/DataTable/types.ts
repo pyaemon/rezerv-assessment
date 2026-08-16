@@ -44,8 +44,6 @@ export interface ColumnDef<TRow, TValue = unknown> {
   headerLabel?: string;
 }
 
-/** Heterogeneous value types, so collections are held at `any`.
- *  Per-column safety comes from `createColumnHelper` at the definition site. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyColumnDef<TRow> = ColumnDef<TRow, any>;
 

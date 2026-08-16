@@ -47,10 +47,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Link>
           ))}
         </nav>
-
-        <p className={styles.sidebarNote}>
-          Frontend assessment — Part 2. All data is mocked in the browser.
-        </p>
       </aside>
 
       <main id="main" className={styles.main}>
@@ -119,7 +115,9 @@ export function Section({
     <section className={styles.section}>
       <div className={styles.sectionHead}>
         <h2 className={styles.sectionTitle}>{title}</h2>
-        {description && <p className={styles.sectionDescription}>{description}</p>}
+        {description && (
+          <p className={styles.sectionDescription}>{description}</p>
+        )}
       </div>
       {children}
     </section>

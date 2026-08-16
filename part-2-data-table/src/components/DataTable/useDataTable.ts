@@ -17,7 +17,8 @@ const collator = new Intl.Collator(undefined, {
   sensitivity: 'base',
 });
 
-const isNil = (value: unknown): boolean => value === null || value === undefined;
+const isNil = (value: unknown): boolean =>
+  value === null || value === undefined;
 
 /** Numbers, dates and booleans compare naturally; the rest use a
  *  numeric-aware collator, so "Studio 2" sorts before "Studio 10". */
@@ -173,13 +174,12 @@ export function useDataTable<TRow>(
   }, [data, activeSort, manualSorting, columnsById]);
 
   const rowCount = manualPagination
-    ? (rowCountProp ?? data.length)
+    ? rowCountProp ?? data.length
     : sortedData.length;
 
   const safePageSize = Math.max(1, Math.floor(pageSize) || 1);
   const pageCount = Math.max(1, Math.ceil(rowCount / safePageSize));
-  // Out-of-range pages are clamped at read time rather than corrected in an
-  // effect — no render loop, and a controlled parent is never fought with.
+
   const safePage = Math.min(Math.max(1, Math.floor(page) || 1), pageCount);
 
   const pageRows = useMemo(() => {
@@ -262,7 +262,8 @@ export function useDataTable<TRow>(
         if (!previous || previous.columnId !== columnId) {
           return { columnId, direction: 'asc' };
         }
-        if (previous.direction === 'asc') return { columnId, direction: 'desc' };
+        if (previous.direction === 'asc')
+          return { columnId, direction: 'desc' };
         return null;
       });
       // A re-sort invalidates the current page offset.
